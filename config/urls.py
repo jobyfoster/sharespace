@@ -33,9 +33,10 @@ urlpatterns = [
     path("", app_views.home, name="home"),
     path("upload/", app_views.upload, name="upload"),
     path("files/", app_views.user_files, name="user_files"),
+    path("space/<str:space_id>/", app_views.view_share_space, name="view_shared_space"),
     path("download/<str:file_id>/", app_views.download_file_view, name="download"),
     path("report/<str:file_id>/", app_views.report_file, name="report"),
-    path("delete/<str:file_id>/", app_views.delete_file, name="delete_file"),
+    path("delete-file/<str:file_id>/", app_views.delete_file, name="delete_file"),
     # Admin Views
     path("admin-panel/", admin_views.admin_panel, name="admin_panel"),
     path(

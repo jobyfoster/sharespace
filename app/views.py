@@ -3,7 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.contrib import messages
 from .forms import FileUploadForm
-from .models import UploadedFile, Report, get_user_files, create_report
+from .models import (
+    ShareSpace,
+    UploadedFile,
+    Report,
+    get_user_files,
+    create_report,
+    create_shared_space,
+)
 from django.conf import settings
 import os
 
@@ -17,16 +24,40 @@ def upload(request):
     if request.method == "POST":
         form = FileUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            print("Form passed")
-            new_file = form.save(commit=False)
-            new_file.user = request.user
-            new_file.save()
-            print("File saved")
-            return redirect("download", file_id=new_file.id)
+            title = form.cleaned_data["title"]
+            description = form.cleaned_data["description"]
+            files = form.cleaned_data["file_field"]
+
+            shared_space = create_shared_space(
+                user=request.user, title=title, description=description
+            )
+
+            for file in files:
+                UploadedFile.objects.create(
+                    share_space=shared_space,
+                    user=request.user,
+                    file=file,
+                )
+                print(f"Uploaded new file")
+
+            messages.success(request, "Share space successfully created!")
+            return redirect("view_shared_space", space_id=shared_space.id)
     else:
         form = FileUploadForm()
 
     return render(request, "app/upload_file.html", {"form": form})
+
+
+@login_required
+def view_share_space(request, space_id):
+    share_space = get_object_or_404(ShareSpace, id=space_id)
+    share_space_files = share_space.files.all()
+
+    return render(
+        request,
+        "app/share_space.html",
+        context={"share_space": share_space, "files": share_space_files},
+    )
 
 
 @login_required

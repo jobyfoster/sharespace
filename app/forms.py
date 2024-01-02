@@ -1,17 +1,25 @@
 from django import forms
-from .models import UploadedFile
 
 
-class FileUploadForm(forms.ModelForm):
-    class Meta:
-        model = UploadedFile
-        fields = ["title", "file", "description"]
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
 
-    def clean_file(self):
-        file = self.cleaned_data.get("file", False)
-        if file:
-            if file.size > 10 * 1024 * 1024:
-                raise forms.ValidationError("File too large ( > 10MB )")
-            return file
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
         else:
-            raise forms.ValidationError("Couldn't read uploaded file")
+            result = single_file_clean(data, initial)
+        return result
+
+
+class FileUploadForm(forms.Form):
+    title = forms.CharField(max_length=100)
+    file_field = MultipleFileField()
+    description = forms.CharField(widget=forms.Textarea, required=False)

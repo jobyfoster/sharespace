@@ -16,14 +16,37 @@ def generate_unique_id():
             return unique_id
 
 
-class UploadedFile(models.Model):
+class ShareSpace(models.Model):
     id = models.CharField(
         max_length=8, primary_key=True, default=generate_unique_id, editable=False
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=100)
-    file = models.FileField(upload_to="uploads/")
     description = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Share Space {self.id}"
+
+
+def create_shared_space(user, title, description):
+    new_space = ShareSpace.objects.create(
+        user=user, title=title, description=description
+    )
+    new_space.save()
+
+    return new_space
+
+
+class UploadedFile(models.Model):
+    id = models.CharField(
+        max_length=8, primary_key=True, default=generate_unique_id, editable=False
+    )
+    share_space = models.ForeignKey(
+        ShareSpace, on_delete=models.CASCADE, related_name="files"
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    file = models.FileField(upload_to="uploads/")
     upload_date = models.DateTimeField(auto_now_add=True)
     file_type = models.CharField(max_length=50, blank=True)
 

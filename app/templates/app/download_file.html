@@ -12,7 +12,7 @@
 {% block content %}
 <div class="file-container mt-5">
     <div class="header">
-        <h2 class="file-title">{{ file.title }}</h2>
+        <h2 class="file-title">{{ file.filename }}</h2>
         <div class="options-menu">
             <button class="options-button rounded-md shadow-sm"><i class="fas fa-ellipsis-v"></i></button>
             <div class="options-dropdown">
@@ -22,14 +22,12 @@
         </div>
     </div>
 
-    <div class="file-meta">
+    <div class="file-meta mt-1">
         <span class="meta-item"><i class="fas fa-calendar-alt"></i> Uploaded on: {{ file.upload_date|date:"D d M. Y" }}</span>
         <span class="meta-item"><i class="fas fa-user"></i> Uploaded by: {{ file.user.username }}</span>
     </div>
-    
-    <p class="file-description">{{ file.description }}</p>
 
-    <a href="{{ file.file.url }}" class="btn btn-download" download="{{ file.title }}{{ file.title|add:file.file.url|slice:'-4:' }}">Download File</a>
+    <a href="{{ file.file.url }}" class="btn btn-download mt-7" download="{{ file.title }}{{ file.title|add:file.file.url|slice:'-4:' }}"><i class="fa-solid fa-download"></i> Download File</a>
 </div>
 
 
