@@ -1,0 +1,97 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block page_title %}{% endblock page_title %}</title>
+
+        <link rel="stylesheet" href="{% static "css/styles.css" %}">
+
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        
+
+        {% block head_block %}
+        
+        {% endblock head_block %}
+    </head>
+    <body class="flex flex-col min-h-screen">
+        <nav class="bg-gray-800 p-4 text-white">
+            <div class="flex justify-between items-center">
+                <!-- Left-aligned links -->
+                <div class="flex items-center space-x-1">
+                    <a class="text-xl font-semibold" href="{% url 'home' %}">FileXfer</a>
+                    <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'home' %}">Home</a>
+                    {% if user.is_authenticated %}
+                        <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'upload' %}">Upload</a>
+                    {% endif %}
+                </div>
+        
+                      
+                <!-- Right-aligned links -->
+                <div id="navbar-links" class="hidden md:flex justify-end items-center space-x-2">
+                    {% if user.is_authenticated %}
+                        <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'user_files' %}">My Files</a>
+                        <a class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white" href="{% url 'logout' %}">Logout</a>
+                    {% else %}
+                        <a class="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white" href="{% url 'login' %}">Sign In</a>
+                        <a class="py-2 px-4 bg-green-500 hover:bg-green-600 text-white" href="{% url 'register' %}">Sign Up</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Toggle -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-toggle" class="text-gray-300 hover:text-white">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        
+    
+        <main class="flex-grow">
+            <div id="message-container" class="container mx-auto p-4">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} p-4 mb-4 border-l-4" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% block content %}
+            {% endblock content %}
+        </main>
+    
+        <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
+            © 2023 FileXfer<a href="{% url "admin_panel" %}" class="text-white-500">.</a> All Rights Reserved.
+        </footer>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const messages = document.querySelectorAll('.alert');
+                messages.forEach(message => {
+                    setTimeout(() => {
+                        message.style.animation = 'slideUp 0.5s ease forwards';
+                        setTimeout(() => message.remove(), 500);
+                    }, 5000);
+                });
+            });
+
+            document.addEventListener("DOMContentLoaded", function() {
+                const toggleButton = document.getElementById('mobile-menu-toggle');
+                const navLinks = document.getElementById('navbar-links');
+        
+                toggleButton.addEventListener('click', () => {
+                    navLinks.classList.toggle('hidden');
+                });
+            });
+        </script>
+        
+    </body>
+    
+</html>

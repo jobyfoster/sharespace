@@ -1,0 +1,47 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block page_title %}{% endblock page_title %}
+
+{% block content %}
+<div class="flex">
+    <!-- Sidebar -->
+    <div class="w-64 h-screen bg-gray-700 text-white">
+        <ul class="space-y-2 py-2">
+            <!-- Dashboard Link -->
+            {% comment %} <li><a href="{% url 'home' %}" class="block px-4 py-2">Dashboard</a></li> {% endcomment %}
+
+            <!-- Report Management Group -->
+            <li>
+                <span class="block px-4 py-2 font-semibold">Report Management</span>
+                <ul class="pl-4">
+                    <li><a href="{% url 'admin_review_new_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Unreviewed Reports</a></li>
+                    <li><a href="{% url 'admin_review_reviewed_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Reviewed Reports</a></li>
+                    <li><a href="{% url 'home' %}" class="block px-4 py-2 hover:bg-gray-800">All Reports</a></li>
+                    <!-- More Report Management links -->
+                </ul>
+            </li>
+
+            <!-- User Management Group -->
+            {% comment %} <li>
+                <span class="block px-4 py-2 font-semibold">User Management</span>
+                <ul class="pl-4">
+                    <li><a href="{% url 'home' %}" class="block px-4 py-2">User List</a></li>
+                    <!-- More User Management links -->
+                </ul>
+            </li> {% endcomment %}
+        </ul>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-1">
+        <div class="tab-content">
+            {% block admin_content %}
+            {% endblock admin_content %}
+        </div>
+    </div>
+</div>
+
+<!-- Custom JavaScript -->
+<script src="{% static 'js/main.js' %}"></script>
+
+{% endblock content %}

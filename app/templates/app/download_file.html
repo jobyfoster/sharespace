@@ -1,0 +1,37 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block page_title %}
+{{ file.title }}
+{% endblock page_title %}
+
+{% block head_block %}
+<link rel="stylesheet" href="{% static "css/download_file.css" %}">
+{% endblock head_block %}
+
+{% block content %}
+<div class="file-container mt-5">
+    <div class="header">
+        <h2 class="file-title">{{ file.title }}</h2>
+        <div class="options-menu">
+            <button class="options-button rounded-md shadow-sm"><i class="fas fa-ellipsis-v"></i></button>
+            <div class="options-dropdown">
+                <a href="{% url 'report' file.id %}" class="dropdown-item">Report</a>
+                <a href="{% url 'delete_file' file.id %}" class="dropdown-item">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="file-meta">
+        <span class="meta-item"><i class="fas fa-calendar-alt"></i> Uploaded on: {{ file.upload_date|date:"D d M. Y" }}</span>
+        <span class="meta-item"><i class="fas fa-user"></i> Uploaded by: {{ file.user.username }}</span>
+    </div>
+    
+    <p class="file-description">{{ file.description }}</p>
+
+    <a href="{{ file.file.url }}" class="btn btn-download" download="{{ file.title }}{{ file.title|add:file.file.url|slice:'-4:' }}">Download File</a>
+</div>
+
+
+<script src="{% static "js/downloadFileDropdown.js" %}" defer></script>
+{% endblock %}

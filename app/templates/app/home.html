@@ -1,0 +1,49 @@
+{% extends "app/base.html" %}
+
+{% block page_title %}FileXfer - Fast, Secure, Simple File Transfers{% endblock page_title %}
+
+{% block content %}
+<header class="bg-blue-600 text-white text-center py-8">
+    <h1 class="text-3xl">Welcome to FileXfer – Fast, Secure, Simple File Transfers!</h1>
+</header>
+
+<section class="container mx-auto my-10">
+    <div class="flex flex-wrap -mx-4">
+        <div class="w-full md:w-1/2 px-4 mb-6">
+            <h2 class="text-2xl font-bold">Effortless Sharing in a Click:</h2>
+            <p>At FileXfer, we believe sharing large files should be as easy as a single click. Whether it's documents, videos, or large datasets, send it instantly with FileXfer.</p>
+        </div>
+        <div class="w-full md:w-1/2 px-4 mb-6">
+            <h2 class="text-2xl font-bold">Security You Can Trust:</h2>
+            <p>Your files' security is our top priority. With end-to-end encryption, we ensure your data is protected every step of the way.</p>
+        </div>
+        <div class="w-full md:w-1/2 px-4 mb-6">
+            <h2 class="text-2xl font-bold">No Size Limits, No Worries:</h2>
+            <p>Forget about compressing files or splitting them up. With FileXfer, you can send files of any size without a hitch.</p>
+        </div>
+        <div class="w-full md:w-1/2 px-4 mb-6">
+            <h2 class="text-2xl font-bold">Accessible Anywhere, Anytime:</h2>
+            <p>Whether you're at the office or on the go, FileXfer's cloud-based platform means you can access and share your files from any device, anywhere.</p>
+        </div>
+    </div>
+</section>
+
+{% if user.is_authenticated %}
+<section class="bg-gray-100 py-5">
+    <div class="text-center">
+        <h2 class="text-3xl font-semibold">Start Uploading Files:</h2>
+        <p>Join FileXfer today and experience the ultimate convenience in file sharing!</p>
+        <a class="inline-block px-6 py-2 text-white bg-green-500 hover:bg-green-600 rounded transition-colors" href="{% url "upload" %}">Upload</a>
+    </div>
+</section>
+{% else %}
+<section class="bg-gray-100 py-5">
+    <div class="text-center">
+        <h2 class="text-3xl font-semibold">Get Started for Free:</h2>
+        <p>Join FileXfer today and experience the ultimate convenience in file sharing!</p>
+        <a class="inline-block px-6 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded transition-colors" href="{% url "register" %}">Sign Up</a>
+    </div>
+</section>
+{% endif %}
+
+{% endblock content %}

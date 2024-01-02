@@ -1,0 +1,93 @@
+*,
+*::before,
+*::after {
+  box-sizing: content-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+}
+
+.navbar {
+  background-color: #333; /* Dark background */
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.nav-link {
+  color: #ffffff;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #cccccc;
+}
+
+.btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.btn-outline-success:hover {
+  background-color: #28a745;
+  color: #ffffff;
+}
+
+.container {
+  position: relative;
+}
+
+@keyframes dropDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+#message-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.alert {
+  animation: dropDown 0.5s ease forwards;
+}
+
+.alert-success {
+  background-color: rgb(220 252 231); /*100*/
+  color: rgb(21 128 61); /*700*/
+  border-color: rgb(34 197 94); /*500*/
+}
+
+.alert-error {
+  background-color: rgb(254 226 226); /*100*/
+  color: rgb(185 28 28); /*700*/
+  border-color: rgb(239 68 68); /*500*/
+}
