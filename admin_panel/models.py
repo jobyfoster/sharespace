@@ -57,7 +57,7 @@ def create_audit_log_for_space_creation(user, space):
 
 def create_audit_log_for_report_submitted(report):
     new_log = AuditLog.objects.create(
-        user=request.reported_by,
+        user=report.reported_by,
         action="report_submitted",
         message=f"{report.reported_by.username} has submitted a report on {report.user_reported.username}.",
     )
