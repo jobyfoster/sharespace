@@ -47,7 +47,7 @@ def create_audit_log_for_space_creation(user, space):
 
     new_log = AuditLog.objects.create(
         user=user,
-        action="login",
+        action="file_upload",
         message=f"{user.username} has created a new ShareSpace called {space_name} with {space_files} files.",
     )
     new_log.save()
@@ -57,9 +57,9 @@ def create_audit_log_for_space_creation(user, space):
 
 def create_audit_log_for_report_submitted(report):
     new_log = AuditLog.objects.create(
-        user=user,
-        action="login",
-        message=f"{report.reported_by} has submitted a report on {report.user_reported.username}.",
+        user=request.reported_by,
+        action="report_submitted",
+        message=f"{report.reported_by.username} has submitted a report on {report.user_reported.username}.",
     )
     new_log.save()
 
@@ -69,7 +69,7 @@ def create_audit_log_for_report_submitted(report):
 def create_audit_log_for_report_change(user, report):
     new_log = AuditLog.objects.create(
         user=user,
-        action="login",
+        action="report_change",
         message=f"{report.reviewed_by.username} has changed the status of Report #{report.id} to {report.get_status_display}.",
     )
     new_log.save()

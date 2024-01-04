@@ -25,7 +25,7 @@ class ShareSpace(models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=64)
     description = models.TextField(blank=True)
 
     def time_uploaded_from_now(self):
