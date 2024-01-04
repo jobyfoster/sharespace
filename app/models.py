@@ -12,7 +12,10 @@ import os
 def generate_unique_id():
     while True:
         unique_id = "".join(random.choices(string.ascii_letters + string.digits, k=8))
-        if not UploadedFile.objects.filter(id=unique_id).exists():
+        if (
+            not UploadedFile.objects.filter(id=unique_id).exists()
+            or not ShareSpace.objects.filter(id=unique_id).exists()
+        ):
             return unique_id
 
 

@@ -11,7 +11,7 @@
             <li class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
                 <div class="flex items-center justify-between">
                     <span class="text-gray-600">{{ log.message }}</span>
-                    <span class="text-lg">{{ log.created_at|date:"M d, Y H:i" }}</span>
+                    <span class="text-md">{{ log.created_at|date:"M d, Y H:i" }}</span>
                 </div>
             </li>
             {% empty %}
