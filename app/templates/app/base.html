@@ -22,7 +22,7 @@
             <div class="flex justify-between items-center">
                 <!-- Left-aligned links -->
                 <div class="flex items-center space-x-1">
-                    <a class="text-xl font-semibold" href="{% url 'home' %}">FileXfer</a>
+                    <a class="text-xl font-semibold" href="{% url 'home' %}">ShareSpace</a>
                     <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'home' %}">Home</a>
                     {% if user.is_authenticated %}
                         <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'upload' %}">Upload</a>
@@ -33,11 +33,11 @@
                 <!-- Right-aligned links -->
                 <div id="navbar-links" class="hidden md:flex justify-end items-center space-x-2">
                     {% if user.is_authenticated %}
-                        <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'user_files' %}">My Files</a>
-                        <a class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white" href="{% url 'logout' %}">Logout</a>
+                        <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'user_spaces' %}">My Spaces</a>
+                        <a class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-sm" href="{% url 'logout' %}">Logout</a>
                     {% else %}
-                        <a class="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white" href="{% url 'login' %}">Sign In</a>
-                        <a class="py-2 px-4 bg-green-500 hover:bg-green-600 text-white" href="{% url 'register' %}">Sign Up</a>
+                        <a class="py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-sm" href="{% url 'login' %}">Sign In</a>
+                        <a class="py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-sm" href="{% url 'register' %}">Sign Up</a>
                     {% endif %}
                 </div>
 
@@ -53,7 +53,7 @@
         </nav>
         
     
-        <main class="flex-grow">
+        <main class="flex-grow bg-slate-50">
             <div id="message-container" class="container mx-auto p-4">
                 {% if messages %}
                     {% for message in messages %}
@@ -68,7 +68,7 @@
         </main>
     
         <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
-            © 2023 FileXfer<a href="{% url "admin_panel" %}" class="text-white-500">.</a> All Rights Reserved.
+            © 2023 ShareSpace<a href="{% url "admin_panel" %}" class="text-white-500">.</a> All Rights Reserved.
         </footer>
 
         <script>

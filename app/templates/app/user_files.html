@@ -1,10 +1,10 @@
 {% extends "app/base.html" %}
 
-{% block page_title %}My Files{% endblock page_title %}
+{% block page_title %}My Spaces{% endblock page_title %}
 
 {% block content %}
 <div class="container mx-auto mt-6">
-    <h3 class="text-2xl font-semibold">My Files</h3>
+    <h3 class="text-3xl font-semibold mb-1">My Spaces</h3>
     <div class="overflow-x-auto mt-4">
         <table class="min-w-full table-auto leading-normal">
             <thead>
@@ -13,39 +13,49 @@
                         Title
                     </th>
                     <th scope="col" class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Filename
-                    </th>
-                    <th scope="col" class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Uploaded
                     </th>
                     <th scope="col" class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Created By
+                        Posted By
                     </th>
                     <th scope="col" class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        View
                     </th>
                 </tr>
             </thead>
             <tbody>
-                {% for file in files %}
-                    <tr class="odd:bg-white even:bg-slate-50 hover:bg-gray-100">
-                        <td class="px-5 py-2 border-b border-gray-200 text-sm">
-                            {{ file.title }}
+                {% for space in users_spaces %}
+                    <tr class="odd:bg-white even:bg-slate-100 hover:bg-slate-200 transition duration-200 ease-in-out">
+                        <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                            <div class="flex items-center">
+                                <div class="ml-3">
+                                    <p class="text-gray-900 whitespace-no-wrap">
+                                        {{ space.title }}
+                                    </p>
+                                </div>
+                            </div>
                         </td>
-                        <td class="px-5 py-2 border-b border-gray-200 text-sm">{{ file.filename }}</td>
-                        <td class="px-5 py-2 border-b border-gray-200 text-sm">{{ file.time_uploaded_from_now }} ago</td>
-                        <td class="px-5 py-2 border-b border-gray-200 text-sm">{{ file.user.username }}</td>
-                        <td class="px-5 py-2 border-b border-gray-200 text-sm">
-                            <a href="{% url 'download' file.id %}" class="text-blue-500 hover:text-blue-800">View</a>
+                        <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                            <p class="text-gray-900 whitespace-no-wrap">{{ space.time_uploaded_from_now }} ago</p>
+                        </td>
+                        <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                            <p class="text-gray-900 whitespace-no-wrap">{{ space.user.username }}</p>
+                        </td>
+                        <td class="px-5 py-5 border-b border-gray-200 text-sm text-right">
+                            <a href="{% url 'view_share_space' space.id %}" class="text-blue-500 hover:text-blue-800 transition duration-300 ease-in-out">
+                                <i class="fa-solid fa-eye"></i> View
+                            </a>
                         </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="5" class="px-5 py-2 border-b border-gray-200 bg-white text-sm text-center">No files found.</td>
+                        <td colspan="3" class="px-5 py-2 border-b border-gray-200 bg-white text-sm text-center">
+                            <p class="text-gray-900 whitespace-no-wrap">No files in this share space yet.</p>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
 {% endblock content %}

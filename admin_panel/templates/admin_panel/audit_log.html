@@ -1,0 +1,59 @@
+{% extends "admin_panel/base.html" %}
+
+{% block page_title %}Audit Log{% endblock page_title %}
+
+{% block admin_content %}
+<div class="audit-log-container container mx-auto p-5">
+    <h1 class="text-3xl font-semibold pb-5 text-gray-800">Audit Log</h1>
+    <div class="bg-white rounded-lg shadow">
+        <ul class="list-none divide-y divide-gray-200">
+            {% for log in logs %}
+            <li class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600">{{ log.message }}</span>
+                    <span class="text-lg">{{ log.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+            </li>
+            {% empty %}
+            <li class="p-4">
+                <span>No logs available.</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<div class="pagination-container mt-5 py-3">
+    <nav class="flex justify-center">
+        <ul class="inline-flex items-center space-x-1">
+            {% if logs.has_previous %}
+                <li>
+                    <a href="?page=1" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">First</a>
+                </li>
+                <li>
+                    <a href="?page={{ logs.previous_page_number }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Previous</a>
+                </li>
+            {% endif %}
+            {% for num in logs.paginator.page_range %}
+                {% if logs.number == num %}
+                    <li>
+                        <a href="?page={{ num }}" class="px-3 py-1 bg-blue-600 text-white rounded-md" aria-current="page">{{ num }}</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="?page={{ num }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if logs.has_next %}
+                <li>
+                    <a href="?page={{ logs.next_page_number }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Next</a>
+                </li>
+                <li>
+                    <a href="?page={{ logs.paginator.num_pages }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+{% endblock admin_content %}

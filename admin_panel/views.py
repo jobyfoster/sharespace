@@ -9,6 +9,8 @@ from app.models import (
     get_under_review_reports,
     review_report,
 )
+from django.core.paginator import Paginator
+from .models import AuditLog, create_audit_log_for_report_change
 from django.http import HttpResponseRedirect
 from .decorators import group_required
 
@@ -35,9 +37,10 @@ def report_no_action(request, user_id, report_id):
         reviewed_by = User.objects.get(id=user_id)
         review_report(report, reviewed_by, Report.ReportStatus.REVIEWED_NO_ACTION)
 
+        create_audit_log_for_report_change(user=request.user, report=report)
         messages.success(
             request,
-            f'Report #{report_id} has been marked "Reviewed - No Action Taken" by {reviewed_by.username}!',
+            f'Report #{report_id} has been marked "No Action Taken" by {reviewed_by.username}!',
         )
 
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
@@ -50,9 +53,10 @@ def report_action_taken(request, user_id, report_id):
         reviewed_by = User.objects.get(id=user_id)
         review_report(report, reviewed_by, Report.ReportStatus.REVIEWED_ACTION_TAKEN)
 
+        create_audit_log_for_report_change(user=request.user, report=report)
         messages.success(
             request,
-            f'Report #{report_id} has been marked "Reviewed - Action Taken" by {reviewed_by.username}!',
+            f'Report #{report_id} has been marked "Action Taken" by {reviewed_by.username}!',
         )
 
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
@@ -66,3 +70,14 @@ def view_reviewed_reports(request):
     return render(
         request, "admin_panel/reviewed_reports.html", {"reports": reviewed_reports}
     )
+
+
+@group_required("Admin")
+def audit_log(request):
+    logs_list = AuditLog.objects.all().order_by("-created_at")
+    paginator = Paginator(logs_list, 10)
+
+    page_number = request.GET.get("page")
+    logs = paginator.get_page(page_number)
+
+    return render(request, "admin_panel/audit_log.html", {"logs": logs})

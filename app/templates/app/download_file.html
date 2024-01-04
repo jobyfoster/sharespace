@@ -1,35 +1,36 @@
 {% extends "app/base.html" %}
 {% load static %}
 
-{% block page_title %}
-{{ file.title }}
-{% endblock page_title %}
+{% block page_title %}{{ file.title }}{% endblock page_title %}
 
 {% block head_block %}
 <link rel="stylesheet" href="{% static "css/download_file.css" %}">
 {% endblock head_block %}
 
 {% block content %}
-<div class="file-container mt-5">
-    <div class="header">
-        <h2 class="file-title">{{ file.filename }}</h2>
-        <div class="options-menu">
-            <button class="options-button rounded-md shadow-sm"><i class="fas fa-ellipsis-v"></i></button>
-            <div class="options-dropdown">
-                <a href="{% url 'report' file.id %}" class="dropdown-item">Report</a>
-                <a href="{% url 'delete_file' file.id %}" class="dropdown-item">Delete</a>
+<div class="file-container mx-auto my-5 p-9 bg-white border border-gray-200 rounded-lg shadow-md max-w-3xl text-left">
+    <div class="header flex justify-between items-start">
+        <h2 class="file-title text-4xl font-bold text-gray-800">{{ file.filename }}</h2>
+        <div class="options-menu relative">
+            <button class="options-button rounded-md shadow-sm bg-transparent border border-gray-300 text-gray-800 bg-gray-50 hover:bg-gray-100 transition transform duration-300 ease-in-out">
+                <i class="fas fa-cog"></i>
+            </button>
+            <div class="options-dropdown absolute w-28 right-0 mt-1 hidden bg-white rounded-md hover:rounded-md shadow-lg z-10">
+                <a href="{% url 'report' file.id %}" class="dropdown-item block px-4 py-2 text-gray-800 hover:bg-gray-100"><i class="fa-solid fa-flag"></i> Report</a>
+                <a href="{% url 'delete_file' file.id %}" class="dropdown-item block px-4 py-2 text-gray-800 hover:bg-gray-100"><i class="fa-solid fa-trash-can"></i> Delete</a>
             </div>
         </div>
     </div>
 
-    <div class="file-meta mt-1">
-        <span class="meta-item"><i class="fas fa-calendar-alt"></i> Uploaded on: {{ file.upload_date|date:"D d M. Y" }}</span>
-        <span class="meta-item"><i class="fas fa-user"></i> Uploaded by: {{ file.user.username }}</span>
+    <div class="file-meta mt-1 flex flex-wrap gap-4 mt-2">
+        <span class="meta-item flex items-center"><i class="fas fa-calendar-alt mr-2"></i> Uploaded on: {{ file.upload_date|date:"D d M. Y" }}</span>
+        <span class="meta-item flex items-center"><i class="fas fa-user mr-2"></i> Uploaded by: {{ file.user.username }}</span>
     </div>
 
-    <a href="{{ file.file.url }}" class="btn btn-download mt-7" download="{{ file.title }}{{ file.title|add:file.file.url|slice:'-4:' }}"><i class="fa-solid fa-download"></i> Download File</a>
+    <a href="{{ file.file.url }}" download="{{ file.filename }}" class="btn-download mt-7 block w-full bg-blue-500 hover:bg-blue-600 text-white text-center py-4 px-6 rounded-md transition duration-300 ease-in-out">
+        <i class="fa-solid fa-cloud-arrow-down pr-2"></i>Download File
+    </a>
 </div>
-
 
 <script src="{% static "js/downloadFileDropdown.js" %}" defer></script>
 {% endblock %}

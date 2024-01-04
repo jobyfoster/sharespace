@@ -32,11 +32,12 @@ urlpatterns = [
     # App Views
     path("", app_views.home, name="home"),
     path("upload/", app_views.upload, name="upload"),
-    path("files/", app_views.user_files, name="user_files"),
-    path("space/<str:space_id>/", app_views.view_share_space, name="view_shared_space"),
+    path("spaces/", app_views.user_spaces, name="user_spaces"),
+    path("space/<str:space_id>/", app_views.view_share_space, name="view_share_space"),
     path("download/<str:file_id>/", app_views.download_file_view, name="download"),
     path("report/<str:file_id>/", app_views.report_file, name="report"),
     path("delete-file/<str:file_id>/", app_views.delete_file, name="delete_file"),
+    path("delete-space/<str:space_id>/", app_views.delete_space, name="delete_space"),
     # Admin Views
     path("admin-panel/", admin_views.admin_panel, name="admin_panel"),
     path(
@@ -58,6 +59,11 @@ urlpatterns = [
         "admin-panel/review-report/action-taken/<int:user_id>/<int:report_id>/",
         admin_views.report_action_taken,
         name="report_action_taken",
+    ),
+    path(
+        "admin-panel/audit-log/",
+        admin_views.audit_log,
+        name="audit_log",
     ),
     path("admin/", admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

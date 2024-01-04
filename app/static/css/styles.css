@@ -1,3 +1,8 @@
+/* Additional CSS Variables for Consistency */
+:root {
+  --gray-100: #f8f9fa;
+}
+
 *,
 *::before,
 *::after {
@@ -11,11 +16,13 @@ body {
 }
 
 body {
-  font-family: "Arial", sans-serif;
+  font-family: "Roboto", sans-serif;
+  color: #333;
 }
 
+/* Responsive Menu Style */
 .navbar {
-  background-color: #333; /* Dark background */
+  background-color: #333;
 }
 
 .navbar-brand {
@@ -30,6 +37,15 @@ body {
 
 .nav-link:hover {
   color: #cccccc;
+}
+
+a:hover {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Footer Styles */
+.footer {
+  /* Styles for Footer */
 }
 
 .btn-outline-success {

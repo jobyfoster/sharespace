@@ -1,49 +1,73 @@
 {% extends "app/base.html" %}
+{% load static %}
 
-{% block page_title %}FileXfer - Fast, Secure, Simple File Transfers{% endblock page_title %}
+{% block page_title %}ShareSpace - Fast, Secure, Simple File Transfers{% endblock page_title %}
+
+{% block head_block %}
+<link rel="stylesheet" href="{% static "css/home.css" %}">
+{% endblock head_block %}
 
 {% block content %}
-<header class="bg-blue-600 text-white text-center py-8">
-    <h1 class="text-3xl">Welcome to FileXfer – Fast, Secure, Simple File Transfers!</h1>
+<header class="bg-indigo-600 text-white text-center py-10">
+    <h1 class="header-title">Welcome to ShareSpace – Fast, Secure, Simple File Transfers!</h1>
 </header>
 
-<section class="container mx-auto my-10">
-    <div class="flex flex-wrap -mx-4">
-        <div class="w-full md:w-1/2 px-4 mb-6">
-            <h2 class="text-2xl font-bold">Effortless Sharing in a Click:</h2>
-            <p>At FileXfer, we believe sharing large files should be as easy as a single click. Whether it's documents, videos, or large datasets, send it instantly with FileXfer.</p>
+<section class="hero-section">
+    <div class="container mx-auto my-10 flex flex-col md:flex-row gap-y-10 items-center justify-between">
+        <div class="hero-content">
+            <h1 class="hero-title">Sharing Made Simple and Secure</h1>
+            <p class="hero-description">Effortless, fast file transfers for professionals and individuals alike.</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'upload' %}" class="hero-cta bg-indigo-500 hover:bg-indigo-600">Start Uploading</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="hero-cta bg-green-500 hover:bg-green-600">Get Started</a>
+            {% endif %}
         </div>
-        <div class="w-full md:w-1/2 px-4 mb-6">
-            <h2 class="text-2xl font-bold">Security You Can Trust:</h2>
-            <p>Your files' security is our top priority. With end-to-end encryption, we ensure your data is protected every step of the way.</p>
-        </div>
-        <div class="w-full md:w-1/2 px-4 mb-6">
-            <h2 class="text-2xl font-bold">No Size Limits, No Worries:</h2>
-            <p>Forget about compressing files or splitting them up. With FileXfer, you can send files of any size without a hitch.</p>
-        </div>
-        <div class="w-full md:w-1/2 px-4 mb-6">
-            <h2 class="text-2xl font-bold">Accessible Anywhere, Anytime:</h2>
-            <p>Whether you're at the office or on the go, FileXfer's cloud-based platform means you can access and share your files from any device, anywhere.</p>
+        <div class="hero-image">
+            <img class="w-4/6 mx-auto" src="{% static "images/art.png" %}" alt="Art">
         </div>
     </div>
 </section>
 
-{% if user.is_authenticated %}
-<section class="bg-gray-100 py-5">
-    <div class="text-center">
-        <h2 class="text-3xl font-semibold">Start Uploading Files:</h2>
-        <p>Join FileXfer today and experience the ultimate convenience in file sharing!</p>
-        <a class="inline-block px-6 py-2 text-white bg-green-500 hover:bg-green-600 rounded transition-colors" href="{% url "upload" %}">Upload</a>
+
+<section class="features-section mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-4/5 mx-auto">
+        <div class="feature-block">
+            <i class="fa-solid fa-folder feature-icon"></i>
+            <h2 class="feature-title">Effortless Sharing in a Click:</h2>
+            <p class="feature-description">At ShareSpace, we believe sharing large files should be as easy as a single click. Whether it's documents, videos, or large datasets, send it instantly with FileXfer.</p>
+        </div>
+        <div class="feature-block">
+            <i class="fa-solid fa-user-shield feature-icon"></i>
+            <h2 class="feature-title">Security You Can Trust:</h2>
+            <p class="feature-description">Your files' security is our top priority. With end-to-end encryption, we ensure your data is protected every step of the way.</p>
+        </div>
+        <div class="feature-block">
+            <i class="fa-solid fa-hard-drive feature-icon"></i>
+            <h2 class="feature-title">No Size Limits, No Worries:</h2>
+            <p class="feature-description">Forget about compressing files or splitting them up. With ShareSpace, you can send files of any size without a hitch.</p>
+        </div>
+        <div class="feature-block">
+            <i class="fa-solid fa-globe feature-icon"></i>
+            <h2 class="feature-title">Accessible Anywhere, Anytime:</h2>
+            <p class="feature-description">Whether you're at the office or on the go, ShareSpace's cloud-based platform means you can access and share your files from any device, anywhere.</p>
+        </div>
     </div>
 </section>
-{% else %}
-<section class="bg-gray-100 py-5">
+
+
+<!-- Testimonials/Reviews Section -->
+
+<section class="cta-section bg-light-gray py-5 my-10">
     <div class="text-center">
-        <h2 class="text-3xl font-semibold">Get Started for Free:</h2>
-        <p>Join FileXfer today and experience the ultimate convenience in file sharing!</p>
-        <a class="inline-block px-6 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded transition-colors" href="{% url "register" %}">Sign Up</a>
+        <h2 class="cta-title">Join ShareSpace Today!</h2>
+        <p class="cta-description">Experience the ultimate convenience in file sharing!</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'upload' %}" class="hero-cta bg-indigo-500 hover:bg-indigo-600">Start Uploading</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="hero-cta bg-green-500 hover:bg-green-600">Get Started</a>
+        {% endif %}
     </div>
 </section>
-{% endif %}
 
 {% endblock content %}

@@ -3,7 +3,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate, logout
 
 from django.contrib.auth.decorators import login_required
-
+from admin_panel.models import (
+    create_audit_log_for_new_login,
+    create_audit_log_for_new_user,
+)
 from django.contrib import messages
 
 # Create your views here.
@@ -14,8 +17,9 @@ def register(request):
     if request.POST:
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
             messages.success(request, "Account created!")
+            create_audit_log_for_new_user(user)
             return redirect("login")
 
     return render(request, "users/register.html", {"form": form})
@@ -30,6 +34,7 @@ def signin(request):
 
         if user is not None:
             login(request, user)
+            create_audit_log_for_new_login(user)
             messages.success(request, "Successfully logged in!")
             return redirect("home")
         else:

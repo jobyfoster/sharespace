@@ -25,8 +25,14 @@ class ShareSpace(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
+    def time_uploaded_from_now(self):
+        return timesince(self.created_at)
+
+    def is_owner(self, user):
+        return self.user == user
+
     def __str__(self):
-        return f"Share Space {self.id}"
+        return f"Share Space #{self.id} by {self.user.username}"
 
 
 def create_shared_space(user, title, description):
@@ -36,6 +42,10 @@ def create_shared_space(user, title, description):
     new_space.save()
 
     return new_space
+
+
+def get_user_spaces(user):
+    return ShareSpace.objects.filter(user=user)
 
 
 class UploadedFile(models.Model):
@@ -76,8 +86,8 @@ def get_user_files(user):
 class Report(models.Model):
     class ReportStatus(models.TextChoices):
         UNDER_REVIEW = "UR", "Under Review"
-        REVIEWED_NO_ACTION = "RNA", "Reviewed - No Action Taken"
-        REVIEWED_ACTION_TAKEN = "RAT", "Reviewed - Action Taken"
+        REVIEWED_NO_ACTION = "RNA", "No Action Taken"
+        REVIEWED_ACTION_TAKEN = "RAT", "Action Taken"
 
     reported_by = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="reports_sent"
@@ -98,6 +108,9 @@ class Report(models.Model):
     reviewed_by = models.ForeignKey(
         User, related_name="reports_reviewed", null=True, on_delete=models.CASCADE
     )
+
+    def time_since_submission(self):
+        return timesince(self.date_submitted)
 
     def __str__(self):
         return f"Report #{self.id} on {self.user_reported.username}"
@@ -145,3 +158,9 @@ def get_reviewed_reports():
     )
 
     return reviewed_reports
+
+
+def is_file_taken_down(file):
+    return Report.objects.filter(
+        file_reported=file, status=Report.ReportStatus.REVIEWED_ACTION_TAKEN
+    ).exists()

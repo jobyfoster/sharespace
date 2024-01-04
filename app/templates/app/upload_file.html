@@ -1,18 +1,30 @@
 {% extends "app/base.html" %}
 {% load tailwind_filters %}
-{% block page_title %}Upload File{% endblock page_title %}
+
+{% block page_title %}Upload Files{% endblock page_title %}
 
 {% block content %}
 <div class="container mx-auto mt-10">
-    <div class="card bg-white py-4 px-5 shadow-lg">
-        <h3 class="text-xl font-semibold">Upload File</h3>
+    <div class="card bg-white py-4 px-5 shadow-lg rounded-lg">
+        <h3 class="text-xl font-semibold text-gray-800">Create a New ShareSpace</h3>
         <form method="POST" enctype="multipart/form-data" class="mt-4">
             {% csrf_token %}
-            {{ form|crispy }}
+            <div class="mb-4">
+                {{ form.title|as_crispy_field }}
+            </div>
 
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Submit</button>
+            <div class="mb-4">
+                {{ form.file_field|as_crispy_field }}
+            </div>
+
+            <div class="mb-4">
+                {{ form.description|as_crispy_field }}
+            </div>
+
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Submit
+            </button>
         </form>
     </div>
 </div>
-
 {% endblock content %}

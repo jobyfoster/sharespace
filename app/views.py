@@ -3,15 +3,23 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.contrib import messages
 from .forms import FileUploadForm
+from django.conf import settings
 from .models import (
     ShareSpace,
     UploadedFile,
     Report,
-    get_user_files,
+    get_user_spaces,
     create_report,
+    is_file_taken_down,
     create_shared_space,
 )
-from django.conf import settings
+
+from admin_panel.models import (
+    AuditLog,
+    create_audit_log_for_report_change,
+    create_audit_log_for_space_creation,
+    create_audit_log_for_report_submitted,
+)
 import os
 
 
@@ -28,20 +36,20 @@ def upload(request):
             description = form.cleaned_data["description"]
             files = form.cleaned_data["file_field"]
 
-            shared_space = create_shared_space(
+            share_space = create_shared_space(
                 user=request.user, title=title, description=description
             )
 
             for file in files:
                 UploadedFile.objects.create(
-                    share_space=shared_space,
+                    share_space=share_space,
                     user=request.user,
                     file=file,
                 )
-                print(f"Uploaded new file")
 
             messages.success(request, "Share space successfully created!")
-            return redirect("view_shared_space", space_id=shared_space.id)
+            create_audit_log_for_space_creation(request.user, share_space)
+            return redirect("view_share_space", space_id=share_space.id)
     else:
         form = FileUploadForm()
 
@@ -62,19 +70,23 @@ def view_share_space(request, space_id):
 
 @login_required
 def download_file_view(request, file_id):
-    file_instance = get_object_or_404(UploadedFile, id=file_id, user=request.user)
+    file_instance = get_object_or_404(UploadedFile, id=file_id)
 
     if not file_instance.file:
         raise Http404("File does not exist")
+
+    if is_file_taken_down(file_instance):
+        report = Report.objects.get(file_reported=file_instance)
+        return render(request, "app/file_taken_down.html", {"report": report})
 
     return render(request, "app/download_file.html", {"file": file_instance})
 
 
 @login_required
-def user_files(request):
-    users_files = get_user_files(user=request.user)
+def user_spaces(request):
+    users_spaces = get_user_spaces(user=request.user)
 
-    return render(request, "app/user_files.html", {"files": users_files})
+    return render(request, "app/user_files.html", {"users_spaces": users_spaces})
 
 
 @login_required
@@ -87,13 +99,14 @@ def report_file(request, file_id):
         messages.error(request, "You cannot report a file that you own.")
         return redirect("download", file_id=file_id)
 
-    create_report(
+    new_report = create_report(
         reported_by=reported_by,
         user_reported=user_reported,
         file_reported=reported_file,
     )
 
     messages.success(request, "Report successfully submitted!")
+    create_audit_log_for_report_submitted(new_report)
     return redirect("download", file_id=file_id)
 
 
@@ -112,3 +125,20 @@ def delete_file(request, file_id):
 
     messages.success(request, "File deleted successfully!")
     return redirect("home")
+
+
+@login_required
+def delete_space(request, space_id):
+    user = request.user
+    space = get_object_or_404(ShareSpace, id=space_id)
+
+    is_owner = space.is_owner(user)
+
+    if not is_owner:
+        messages.error(request, "You do not own this space!")
+        return redirect("view_share_space", space_id=space_id)
+
+    space.delete()
+
+    messages.success(request, "Space deleted successfully!")
+    return redirect("user_spaces")
