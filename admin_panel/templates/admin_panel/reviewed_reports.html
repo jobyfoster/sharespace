@@ -27,15 +27,15 @@
             <div class="flex flex-wrap gap-2 justify-between mt-5">                
                 <form action="{% url 'report_no_action' request.user.id report.id %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white {% if report.status != "RNA" %}bg-green-500 hover:bg-green-600 {% else %}bg-green-300 {% endif %}rounded-md focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-2" {% if report.status == "RNA" %}disabled{% endif %}>No Action Taken</button>
+                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white {% if report.status != "RNA" %}bg-green-500 hover:bg-green-600 {% else %}bg-green-300 {% endif %}rounded-md focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-2 transition duration-300 ease-in-out" {% if report.status == "RNA" %}disabled{% endif %}>No Action Taken</button>
                 </form>
                 
                 <form action="{% url 'report_action_taken' request.user.id report.id %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white rounded-md {% if report.status != "RAT" %}bg-red-500 hover:bg-red-600 {% else %}bg-red-300 {% endif %}focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2" {% if report.status == "RAT" %}disabled{% endif %}>Action Taken</button>
+                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white rounded-md {% if report.status != "RAT" %}bg-red-500 hover:bg-red-600 {% else %}bg-red-300 {% endif %}focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 transition duration-300 ease-in-out" {% if report.status == "RAT" %}disabled{% endif %}>Action Taken</button>
                 </form>
 
-                <a href="{% url 'download' report.file_reported.id %}" class="px-5 py-2 text-sm font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2" target="_blank">View File</a>
+                <a href="{% url 'download' report.file_reported.id %}" class="px-5 py-2 text-sm font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition duration-300 ease-in-out" target="_blank">View File</a>
             </div>
         </div>
         
