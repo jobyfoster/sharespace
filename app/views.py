@@ -2,16 +2,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.contrib import messages
-from .forms import FileUploadForm
+from .forms import FileUploadForm, ShareSpaceAccessForm
 from django.conf import settings
 from .models import (
     ShareSpace,
     UploadedFile,
     Report,
+    ShareSpaceAccess,
     get_user_spaces,
     create_report,
     is_file_taken_down,
     create_shared_space,
+    check_and_grant_access,
 )
 
 from admin_panel.models import (
@@ -35,9 +37,15 @@ def upload(request):
             title = form.cleaned_data["title"]
             description = form.cleaned_data["description"]
             files = form.cleaned_data["file_field"]
+            visibility = form.cleaned_data["visibility"]
+            password = form.cleaned_data["password"]
 
             share_space = create_shared_space(
-                user=request.user, title=title, description=description
+                user=request.user,
+                title=title,
+                description=description,
+                visibility=visibility,
+                password=password,
             )
 
             for file in files:
@@ -59,12 +67,53 @@ def upload(request):
 @login_required
 def view_share_space(request, space_id):
     share_space = get_object_or_404(ShareSpace, id=space_id)
+
+    if not share_space.is_accessible_by_user(request.user):
+        if share_space.visibility == ShareSpace.VisibilityChoices.PASSWORD_PROTECTED:
+            return redirect("space_password", space_id=space_id)
+        elif share_space.visibility == ShareSpace.VisibilityChoices.PRIVATE:
+            messages.error(
+                request, "This is a private ShareSpace that you do not have access to!"
+            )
+            return redirect("home")
+
     share_space_files = share_space.files.all()
 
     return render(
         request,
         "app/share_space.html",
         context={"share_space": share_space, "files": share_space_files},
+    )
+
+
+@login_required
+def enter_space_password(request, space_id):
+    share_space = get_object_or_404(ShareSpace, id=space_id)
+    form = ShareSpaceAccessForm()
+
+    if (
+        share_space.visibility != ShareSpace.VisibilityChoices.PASSWORD_PROTECTED
+    ) and share_space.is_accessible_by_user:
+        messages.success(request, "You already have access to this space")
+        return redirect("view_share_space", space_id=space_id)
+
+    if share_space.is_accessible_by_user(request.user):
+        messages.success(request, "You already have access to this space")
+        return redirect("view_share_space", space_id=space_id)
+
+    if request.POST:
+        form = ShareSpaceAccessForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data["password"]
+            if check_and_grant_access(
+                user=request.user, share_space=share_space, password=password
+            ):
+                return redirect("view_share_space", space_id=space_id)
+            else:
+                messages.error(request, "Incorrect password")
+
+    return render(
+        request, "app/enter_space_password.html", {"form": form, "space": share_space}
     )
 
 

@@ -34,6 +34,11 @@ urlpatterns = [
     path("upload/", app_views.upload, name="upload"),
     path("spaces/", app_views.user_spaces, name="user_spaces"),
     path("space/<str:space_id>/", app_views.view_share_space, name="view_share_space"),
+    path(
+        "space-password/<str:space_id>/",
+        app_views.enter_space_password,
+        name="space_password",
+    ),
     path("download/<str:file_id>/", app_views.download_file_view, name="download"),
     path("report/<str:file_id>/", app_views.report_file, name="report"),
     path("delete-file/<str:file_id>/", app_views.delete_file, name="delete_file"),

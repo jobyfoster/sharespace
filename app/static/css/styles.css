@@ -107,3 +107,9 @@ a:hover {
   color: rgb(185 28 28); /*700*/
   border-color: rgb(239 68 68); /*500*/
 }
+
+.errorlist {
+  margin-bottom: 0.5rem;
+  color: rgb(239 68 68);
+  font-weight: 600;
+}

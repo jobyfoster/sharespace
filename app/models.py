@@ -20,6 +20,11 @@ def generate_unique_id():
 
 
 class ShareSpace(models.Model):
+    class VisibilityChoices(models.TextChoices):
+        PUBLIC = "public", "Public"
+        PASSWORD_PROTECTED = "password_protected", "Password Protected"
+        PRIVATE = "private", "Private"
+
     id = models.CharField(
         max_length=8, primary_key=True, default=generate_unique_id, editable=False
     )
@@ -27,6 +32,19 @@ class ShareSpace(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=64)
     description = models.TextField(blank=True)
+    visibility = models.CharField(
+        max_length=20,
+        choices=VisibilityChoices.choices,
+        default=VisibilityChoices.PRIVATE,
+    )
+    password = models.CharField(max_length=50, blank=True, null=True)
+
+    def is_accessible_by_user(self, user):
+        if self.visibility == self.VisibilityChoices.PUBLIC:
+            return True
+        elif self.visibility == self.VisibilityChoices.PASSWORD_PROTECTED:
+            return ShareSpaceAccess.objects.filter(user=user, share_space=self).exists()
+        return self.is_owner(user)
 
     def time_uploaded_from_now(self):
         return timesince(self.created_at)
@@ -38,9 +56,13 @@ class ShareSpace(models.Model):
         return f"Share Space #{self.id} by {self.user.username}"
 
 
-def create_shared_space(user, title, description):
+def create_shared_space(user, title, description, visibility, password):
     new_space = ShareSpace.objects.create(
-        user=user, title=title, description=description
+        user=user,
+        title=title,
+        description=description,
+        visibility=visibility,
+        password=password,
     )
     new_space.save()
 
@@ -49,6 +71,26 @@ def create_shared_space(user, title, description):
 
 def get_user_spaces(user):
     return ShareSpace.objects.filter(user=user)
+
+
+class ShareSpaceAccess(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    share_space = models.ForeignKey(ShareSpace, on_delete=models.CASCADE)
+    access_granted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "share_space")
+
+
+def check_and_grant_access(user, share_space, password):
+    if (
+        share_space.visibility == ShareSpace.VisibilityChoices.PASSWORD_PROTECTED
+        and share_space.password == password
+    ):
+        ShareSpaceAccess.objects.get_or_create(user=user, share_space=share_space)
+
+        return True
+    return False
 
 
 class UploadedFile(models.Model):
@@ -167,3 +209,14 @@ def is_file_taken_down(file):
     return Report.objects.filter(
         file_reported=file, status=Report.ReportStatus.REVIEWED_ACTION_TAKEN
     ).exists()
+
+
+class Favorite(models.Model):
+    share_space = models.ForeignKey(
+        ShareSpace, on_delete=models.CASCADE, related_name="favorites"
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favorites")
+
+
+def get_user_favorites(user):
+    return user.favorites.all()

@@ -1,4 +1,5 @@
 from django import forms
+from .models import ShareSpace
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -23,3 +24,27 @@ class FileUploadForm(forms.Form):
     title = forms.CharField(max_length=100)
     file_field = MultipleFileField()
     description = forms.CharField(widget=forms.Textarea, required=False)
+    visibility = forms.ChoiceField(choices=ShareSpace.VisibilityChoices.choices)
+    password = forms.CharField(
+        max_length=50, widget=forms.PasswordInput(), required=False
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        visibility = cleaned_data.get("visibility")
+        password = cleaned_data.get("password")
+
+        if (
+            visibility == ShareSpace.VisibilityChoices.PASSWORD_PROTECTED
+            and not password
+        ):
+            raise forms.ValidationError(
+                "Password is required for password-protected spaces."
+            )
+        return cleaned_data
+
+
+class ShareSpaceAccessForm(forms.Form):
+    password = forms.CharField(
+        max_length=50, widget=forms.PasswordInput(), required=True
+    )
