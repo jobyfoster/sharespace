@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,14 +6,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block page_title %}{% endblock page_title %}</title>
 
-        <link rel="stylesheet" href="{% static "css/styles.css" %}">
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         
-
         {% block head_block %}
-        
         {% endblock head_block %}
     </head>
     <body class="flex flex-col min-h-screen">
@@ -23,12 +20,11 @@
                 <!-- Left-aligned links -->
                 <div class="flex items-center space-x-1">
                     <a class="text-xl font-semibold" href="{% url 'home' %}">ShareSpace</a>
-                    <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'home' %}">Home</a>
+                    <a class="py-2 px-4 text-gray-300 hover:text-white hidden md:block" href="{% url 'home' %}">Home</a>
                     {% if user.is_authenticated %}
-                        <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'upload' %}">Upload</a>
+                        <a class="py-2 px-4 text-gray-300 hover:text-white hidden md:block" href="{% url 'upload' %}">Upload</a>
                     {% endif %}
                 </div>
-        
                       
                 <!-- Right-aligned links -->
                 <div id="navbar-links" class="hidden md:flex justify-end items-center space-x-2">
@@ -50,25 +46,38 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Dropdown Menu for Mobile -->
+            <div id="mobile-dropdown" class="hidden md:hidden flex flex-col bg-gray-800 p-4">
+                <a href="{% url 'home' %}" class="py-2 px-4 text-gray-300 hover:text-white">Home</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'upload' %}" class="py-2 px-4 text-gray-300 hover:text-white">Upload</a>
+                    <a href="{% url 'user_spaces' %}" class="py-2 px-4 text-gray-300 hover:text-white">My Spaces</a>
+                    <a href="{% url 'logout' %}" class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-sm">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-sm">Sign In</a>
+                    <a href="{% url 'register' %}" class="py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-sm">Sign Up</a>
+                {% endif %}
+            </div>
         </nav>
-        
-    
+
         <main class="flex-grow bg-slate-50">
-            <div id="message-container" class="container mx-auto p-4">
-                {% if messages %}
+            {% if messages %}
+                <div id="message-container" class="container mx-auto p-4">
                     {% for message in messages %}
                         <div class="alert alert-{{ message.tags }} p-4 mb-4 border-l-4" role="alert">
                             {{ message }}
                         </div>
                     {% endfor %}
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
+            
             {% block content %}
             {% endblock content %}
         </main>
     
         <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
-            © 2023 ShareSpace<a href="{% url "admin_panel" %}" class="text-white-500">.</a> All Rights Reserved.
+            © 2023 ShareSpace<a href="{% url 'admin_panel' %}" class="text-white-500">.</a> All Rights Reserved.
         </footer>
 
         <script>
@@ -80,18 +89,14 @@
                         setTimeout(() => message.remove(), 500);
                     }, 5000);
                 });
-            });
 
-            document.addEventListener("DOMContentLoaded", function() {
                 const toggleButton = document.getElementById('mobile-menu-toggle');
-                const navLinks = document.getElementById('navbar-links');
+                const dropdownMenu = document.getElementById('mobile-dropdown');
         
                 toggleButton.addEventListener('click', () => {
-                    navLinks.classList.toggle('hidden');
+                    dropdownMenu.classList.toggle('hidden');
                 });
             });
         </script>
-        
     </body>
-    
 </html>
