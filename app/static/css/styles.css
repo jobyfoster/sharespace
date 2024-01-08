@@ -58,6 +58,55 @@ a:hover {
   color: #ffffff;
 }
 
+/* Desktop Styles */
+@media screen and (min-width: 769px) {
+    .navbar > div {
+        flex-direction: row;
+    }
+
+    .navbar > div > div {
+        justify-content: flex-start;
+    }
+
+    #navbar-links {
+        display: flex; /* Ensures that the navbar links are properly displayed on desktop */
+    }
+
+    .navbar > div > .flex.items-center {
+        flex-grow: 0; /* Prevents the logo container from growing unnecessarily */
+    }
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) { 
+    .navbar > div {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .navbar > div > div {
+        justify-content: center;
+        width: auto;
+        display: flex;
+    }
+
+    .navbar .items-center {
+        width: 100%; /* This ensures the container takes the full width */
+        justify-content: center;
+    }
+
+    #navbar-links {
+        display: none; /* Hide the right-aligned links on mobile */
+    }
+}
+
+/* Styles for mobile dropdown */
+#mobile-dropdown a {
+    text-align: center;
+    display: block;
+}
+
 .container {
   position: relative;
 }
