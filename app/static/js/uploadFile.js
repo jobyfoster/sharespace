@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function() {
     var togglePasswordButton = document.getElementById('togglePassword');
 
 
-
     if (visibilitySelect.value === 'password_protected') {
         passwordInput.disabled = false;
         passwordContainer.classList.remove("hidden")
