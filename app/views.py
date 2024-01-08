@@ -178,7 +178,12 @@ def download_file_view(request, file_id):
         return render(request, "app/file_taken_down.html", {"report": report})
 
     # Renders the file download page if all checks pass.
-    return render(request, "app/download_file.html", {"file": file_instance})
+    previewable_types = [".jpg", ".png", ".pdf", ".txt"]
+    return render(
+        request,
+        "app/download_file.html",
+        {"file": file_instance, "previewable_types": previewable_types},
+    )
 
 
 @login_required
