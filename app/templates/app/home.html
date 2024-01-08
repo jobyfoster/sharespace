@@ -5,6 +5,10 @@
 
 {% block head_block %}
 <link rel="stylesheet" href="{% static "css/home.css" %}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
+
+
 {% endblock head_block %}
 
 {% block content %}
@@ -12,6 +16,7 @@
     <h1 class="header-title">Welcome to ShareSpace – Fast, Secure, Simple File Transfers!</h1>
 </header>
 
+<body>
 <section class="hero-section">
     <div class="container mx-auto my-10 flex flex-col md:flex-row gap-y-10 items-center justify-between">
         <div class="hero-content">
@@ -69,5 +74,29 @@
         {% endif %}
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.from(".feature-block", {
+            y: "80%",                
+            autoAlpha: 0,             
+            rotation: 0,
+            duration: .02,
+            stagger: .2,
+            scrollTrigger: {
+              trigger: ".feature-block",  
+              start: "top bottom",           
+              end: "middle center",          
+              scrub: true,
+              markers: false,
+            },
+          });
+      });
+  
+</script>
+
+</body>
 
 {% endblock content %}
