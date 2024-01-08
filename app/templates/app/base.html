@@ -62,7 +62,7 @@
         </nav>
 
         <main class="flex-grow bg-slate-50">
-            <div id="message-container" class="container mx-auto p-4">
+            <div id="message-container" class="container mx-auto p-4 pointer-events-none">
                 {% if messages %}
                     {% for message in messages %}
                         <div class="alert alert-{{ message.tags }} p-4 mb-4 border-l-4" role="alert">

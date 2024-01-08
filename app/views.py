@@ -177,12 +177,32 @@ def download_file_view(request, file_id):
         # Renders a page indicating the file has been taken down, displaying the report details.
         return render(request, "app/file_taken_down.html", {"report": report})
 
-    # Renders the file download page if all checks pass.
-    previewable_types = [".jpg", ".png", ".pdf", ".txt"]
+    preview_templates = {
+        ".jpg": "app/partials/preview_image.html",
+        ".jpeg": "app/partials/preview_image.html",
+        ".png": "app/partials/preview_image.html",
+        ".webp": "app/partials/preview_image.html",
+        ".gif": "app/partials/preview_image.html",
+        ".pdf": "app/partials/preview_pdf.html",
+        ".mp3": "app/partials/preview_audio.html",
+        ".wav": "app/partials/preview_audio.html",
+        ".mp4": "app/partials/preview_video.html",
+        ".avi": "app/partials/preview_video.html",
+        ".txt": "app/partials/preview_text.html",
+        ".csv": "app/partials/preview_text.html",
+    }
+
+    preview_template = preview_templates.get(file_instance.file_type, None)
+
+    # Pass the preview template name to the context
     return render(
         request,
         "app/download_file.html",
-        {"file": file_instance, "previewable_types": previewable_types},
+        {
+            "file": file_instance,
+            "preview_template": preview_template,
+            "previewable_types": preview_templates.keys(),
+        },
     )
 
 
@@ -273,13 +293,16 @@ def delete_space(request, space_id):
         # Redirects back to the view page of the space.
         return redirect("view_share_space", space_id=space_id)
 
-    # Deletes the space if the user is the owner.
-    space.delete()
+    if request.POST:
+        # Deletes the space if the user is the owner.
+        space.delete()
 
-    # Shows a success message indicating the space has been deleted.
-    messages.success(request, "Space deleted successfully!")
-    # Redirects the user to a page showing their spaces (presumably 'user_spaces').
-    return redirect("user_spaces")
+        # Shows a success message indicating the space has been deleted.
+        messages.success(request, "Space deleted successfully!")
+        # Redirects the user to a page showing their spaces (presumably 'user_spaces').
+        return redirect("user_spaces")
+
+    return render(request, "app/confirm_space_delete.html", {"share_space": space})
 
 
 @login_required
