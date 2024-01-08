@@ -60,51 +60,51 @@ a:hover {
 
 /* Desktop Styles */
 @media screen and (min-width: 769px) {
-    .navbar > div {
-        flex-direction: row;
-    }
+  .navbar > div {
+    flex-direction: row;
+  }
 
-    .navbar > div > div {
-        justify-content: flex-start;
-    }
+  .navbar > div > div {
+    justify-content: flex-start;
+  }
 
-    #navbar-links {
-        display: flex; /* Ensures that the navbar links are properly displayed on desktop */
-    }
+  #navbar-links {
+    display: flex; /* Ensures that the navbar links are properly displayed on desktop */
+  }
 
-    .navbar > div > .flex.items-center {
-        flex-grow: 0; /* Prevents the logo container from growing unnecessarily */
-    }
+  .navbar > div > .flex.items-center {
+    flex-grow: 0; /* Prevents the logo container from growing unnecessarily */
+  }
 }
 
 /* Mobile Styles */
-@media screen and (max-width: 768px) { 
-    .navbar > div {
-        justify-content: center;
-        display: flex;
-        flex-direction: column;
-    }
+@media screen and (max-width: 768px) {
+  .navbar > div {
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+  }
 
-    .navbar > div > div {
-        justify-content: center;
-        width: auto;
-        display: flex;
-    }
+  .navbar > div > div {
+    justify-content: center;
+    width: auto;
+    display: flex;
+  }
 
-    .navbar .items-center {
-        width: 100%; /* This ensures the container takes the full width */
-        justify-content: center;
-    }
+  .navbar .items-center {
+    width: 100%; /* This ensures the container takes the full width */
+    justify-content: center;
+  }
 
-    #navbar-links {
-        display: none; /* Hide the right-aligned links on mobile */
-    }
+  #navbar-links {
+    display: none; /* Hide the right-aligned links on mobile */
+  }
 }
 
 /* Styles for mobile dropdown */
 #mobile-dropdown a {
-    text-align: center;
-    display: block;
+  text-align: center;
+  display: block;
 }
 
 .container {
@@ -146,7 +146,8 @@ a:hover {
 }
 
 .alert-success {
-  background-color: rgb(21 128 61); /*700*/
+  background-color: rgb(220 252 231); /*100*/
+  color: rgb(21 128 61); /*700*/
   border-color: rgb(34 197 94); /*500*/
 }
 
