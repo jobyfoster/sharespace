@@ -16,10 +16,23 @@
                 <i class="fas fa-cog mr-1"></i>
                 <span>Options</span>
             </button>
-            <div class="options-dropdown hidden absolute bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
-                <a href="{% url 'home' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit ShareSpace</a>
-                <a href="{% url 'home' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Report</a>
-                <a href="{% url 'delete_space' share_space.id %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Delete</a>
+            <div class="options-dropdown hidden absolute bg-white shadow-lg rounded-lg mt-2 w-48">
+                {% if is_owner %}
+                    <a href="{% url 'home' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-pen-to-square"></i> Edit ShareSpace</a>
+                    <a href="{% url 'delete_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-trash-can"></i> Delete</a>
+                {% else %}
+
+                    {% if is_favorited %}
+                        <a href="{% url 'unfavorite_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-heart"></i> Unfavorite</a>
+                    {% else %}
+                        <a href="{% url 'favorite_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-regular fa-heart"></i> Favorite</a>
+                    {% endif %}
+            
+                    <a href="{% url 'home' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-flag"></i> Report</a>
+                {% endif %}
+                
+                
+                
             </div>
         </div>
     </div>

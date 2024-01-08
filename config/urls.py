@@ -43,6 +43,16 @@ urlpatterns = [
     path("report/<str:file_id>/", app_views.report_file, name="report"),
     path("delete-file/<str:file_id>/", app_views.delete_file, name="delete_file"),
     path("delete-space/<str:space_id>/", app_views.delete_space, name="delete_space"),
+    path(
+        "favorite-space/<str:space_id>/",
+        app_views.favorite_space,
+        name="favorite_space",
+    ),
+    path(
+        "unfavorite-space/<str:space_id>/",
+        app_views.unfavorite_space,
+        name="unfavorite_space",
+    ),
     # Admin Views
     path("admin-panel/", admin_views.admin_panel, name="admin_panel"),
     path(
