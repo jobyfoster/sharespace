@@ -1,0 +1,51 @@
+{% extends 'app/base.html' %}
+{% load tailwind_filters %}
+{% block content %}
+
+<div class="max-w-lg mx-auto p-4">
+    <h2 class="text-2xl font-bold text-center mb-6">Settings</h2>
+
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form method="post">
+            {% csrf_token %}
+            <h3 class="text-xl font-semibold mb-4">Change Username</h3>
+            <div class="mb-4">
+                
+
+                <div id="div_id_username" class="mb-3"> 
+                    <label for="id_username" class="block text-gray-700 text-sm font-bold mb-2">
+                        Username<span class="asteriskField">*</span> 
+                    </label> 
+                    <input type="text" name="username" value="{{username_form.username.value}}" maxlength="150" class="textinput text-gray-700 bg-white rounded-lg px-4 py-2 focus:outline-none block appearance-none w-full leading-normal border {% if username_form.errors %} border-red-500 {% else %} border-grey-300 {% endif %}" required="" id="id_username"> 
+                    {% if username_form.errors %}
+                    
+                    {% for error in username_form.username.errors %}
+                        <p id="error-{{forloop.counter}}" class="text-red-500 text-xs italic">  
+                            <strong>{{ error|escape }}</strong>
+                        </p> 
+                    {%endfor%}
+                    {% endif %}
+                    <small id="hint_id_username" class="text-gray-600">
+                        Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+                    </small> 
+                </div>
+
+          </div>
+            <button type="submit" name="change_username" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Change Username</button>
+          </form>
+        </div>
+
+    <div class='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
+        <form method="post" action="{% url 'settings' %}">
+            {% csrf_token %}
+            <h3 class="text-xl font-semibold mb-4">Change Password</h3>
+            <div class="mb-4">
+                {{ password_form|crispy }}
+            </div>
+            <button type="submit" name="change_password" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Change Password</button>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

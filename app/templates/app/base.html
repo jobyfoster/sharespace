@@ -29,6 +29,7 @@
                 <!-- Right-aligned links -->
                 <div id="navbar-links" class="hidden md:flex justify-end items-center space-x-2">
                     {% if user.is_authenticated %}
+                        <a class="py-2 text-gray-300 hover:text-white" href="{% url 'settings' %}">Settings</a>
                         <a class="py-2 px-4 text-gray-300 hover:text-white" href="{% url 'user_spaces' %}">My Spaces</a>
                         <a class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-sm" href="{% url 'logout' %}">Logout</a>
                     {% else %}
@@ -53,6 +54,7 @@
                 {% if user.is_authenticated %}
                     <a href="{% url 'upload' %}" class="py-2 px-4 text-gray-300 hover:text-white">Upload</a>
                     <a href="{% url 'user_spaces' %}" class="py-2 px-4 text-gray-300 hover:text-white">My Spaces</a>
+                    <a href="{% url 'settings' %}" class="py-2 px-4 text-gray-300 hover:text-white">Settings</a>
                     <a href="{% url 'logout' %}" class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-sm">Logout</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-sm">Sign In</a>

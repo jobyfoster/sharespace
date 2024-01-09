@@ -16,11 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
 from app import views as app_views
 from users import views as user_views
 from admin_panel import views as admin_views
-
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -30,6 +28,7 @@ urlpatterns = [
     path("login/", user_views.signin, name="login"),
     path("logout/", user_views.log_out, name="logout"),
     # App Views
+    path('settings/', app_views.settings_view, name='settings'),
     path("", app_views.home, name="home"),
     path("upload/", app_views.upload, name="upload"),
     path("spaces/", app_views.user_spaces, name="user_spaces"),
