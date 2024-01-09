@@ -194,12 +194,19 @@ def download_file_view(request, file_id):
 
     preview_template = preview_templates.get(file_instance.file_type, None)
 
+    file_content = None
+    if preview_template == preview_templates[".txt"]:
+        f = open(file_instance.file.path, "r", encoding="utf8")
+        file_content = f.read()
+        f.close()
+
     # Pass the preview template name to the context
     return render(
         request,
         "app/download_file.html",
         {
             "file": file_instance,
+            "file_content": file_content,
             "preview_template": preview_template,
             "previewable_types": preview_templates.keys(),
         },

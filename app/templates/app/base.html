@@ -22,7 +22,7 @@
                     <a class="text-xl font-semibold" href="{% url 'home' %}">ShareSpace</a>
                     <a class="py-2 px-4 text-gray-300 hover:text-white hidden md:block" href="{% url 'home' %}">Home</a>
                     {% if user.is_authenticated %}
-                        <a class="py-2 px-4 text-gray-300 hover:text-white hidden md:block" href="{% url 'upload' %}">Upload</a>
+                        <a class="py-2 px-4 text-gray-300 hover:text-white hidden md:block" href="{% url 'upload' %}">Upload <i class="fa-solid fa-upload"></i></a>
                     {% endif %}
                 </div>
                       
