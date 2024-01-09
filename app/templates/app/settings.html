@@ -6,41 +6,76 @@
     <h2 class="text-2xl font-bold text-center mb-6">Settings</h2>
 
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <form method="post">
+        <form method="post" action="{% url 'settings' %}" class="mb-6">
             {% csrf_token %}
             <h3 class="text-xl font-semibold mb-4">Change Username</h3>
             <div class="mb-4">
-                
-
                 <div id="div_id_username" class="mb-3"> 
                     <label for="id_username" class="block text-gray-700 text-sm font-bold mb-2">
                         Username<span class="asteriskField">*</span> 
                     </label> 
-                    <input type="text" name="username" value="{{username_form.username.value}}" maxlength="150" class="textinput text-gray-700 bg-white rounded-lg px-4 py-2 focus:outline-none block appearance-none w-full leading-normal border {% if username_form.errors %} border-red-500 {% else %} border-grey-300 {% endif %}" required="" id="id_username"> 
-                    {% if username_form.errors %}
-                    
-                    {% for error in username_form.username.errors %}
-                        <p id="error-{{forloop.counter}}" class="text-red-500 text-xs italic">  
-                            <strong>{{ error|escape }}</strong>
-                        </p> 
-                    {%endfor%}
+                    <input type="text" name="username" value="{{username_form.username.value}}" maxlength="150" class="textinput text-gray-700 bg-white rounded-lg px-4 py-2 focus:outline-none block appearance-none w-full leading-normal border {% if username_form.errors %} border-red-500 {% else %} border-gray-300 {% endif %}" required="" id="id_username"> 
+                    {% if username_form.username.errors %}
+                        {% for error in username_form.username.errors %}
+                            <p id="error-{{forloop.counter}}" class="text-red-500 text-xs italic">  
+                                <strong>{{ error|escape }}</strong>
+                            </p> 
+                        {%endfor%}
                     {% endif %}
                     <small id="hint_id_username" class="text-gray-600">
                         Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
                     </small> 
                 </div>
 
-          </div>
+            </div>
             <button type="submit" name="change_username" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Change Username</button>
-          </form>
-        </div>
+        </form>
 
-    <div class='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
         <form method="post" action="{% url 'settings' %}">
             {% csrf_token %}
             <h3 class="text-xl font-semibold mb-4">Change Password</h3>
             <div class="mb-4">
-                {{ password_form|crispy }}
+                <div id="div_id_old_password" class="mb-3">
+                    <label for="id_old_password" class="block text-gray-700 text-sm font-bold mb-2">
+                        Old password<span class="asteriskField">*</span>
+                    </label>
+                    <input type="password" name="old_password" class="form-control passwordinput text-gray-700 bg-white border focus:outline-none {% if password_form.old_password.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-lg w-full appearance-none px-4 py-2 block leading-normal" placeholder="Old Password" required="" aria-invalid="true" id="id_old_password">
+                    {% if password_form.old_password.errors %}
+                        {% for error in password_form.old_password.errors %}
+                            <p id="error-{{forloop.counter}}-new-username" class="text-red-500 text-xs italic">  
+                                <strong>{{ error|escape }}</strong>
+                            </p> 
+                        {%endfor%}
+                    {% endif %}
+                </div>
+
+                <div id="div_id_new_password1" class="mb-3">
+                    <label for="id_new_password1" class="block text-gray-700 text-sm font-bold mb-2">
+                        New password<span class="asteriskField">*</span>
+                    </label>
+                    <input type="password" name="new_password1" class="form-control passwordinput text-gray-700 bg-white border focus:outline-none {% if password_form.new_password1.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-lg w-full appearance-none px-4 py-2 block leading-normal" placeholder="New Password" required="" id="id_new_password1">
+                    {% if password_form.new_password1.errors %}
+                        {% for error in password_form.new_password1.errors %}
+                            <p id="error-{{forloop.counter}}-new-password1" class="text-red-500 text-xs italic">  
+                                <strong>{{ error|escape }}</strong>
+                            </p> 
+                        {%endfor%}
+                    {% endif %}
+                </div>
+
+                <div id="div_id_new_password2" class="mb-3"> <label for="id_new_password2" class="block text-gray-700 text-sm font-bold mb-2">
+                        Repeat password<span class="asteriskField">*</span>
+                    </label>
+                    <input type="password" name="new_password2" class="form-control passwordinput text-gray-700 bg-white border focus:outline-none {% if password_form.new_password2.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-lg w-full appearance-none px-4 py-2 block leading-normal" placeholder="Confirm New Password" required="" aria-invalid="true" id="id_new_password2">
+                    {% if password_form.new_password2.errors %}
+                        {% for error in password_form.new_password2.errors %}
+                            <p id="error-{{forloop.counter}}-new-password2" class="text-red-500 text-xs italic">  
+                                <strong>{{ error|escape }}</strong>
+                            </p> 
+                        {%endfor%}
+                    {% endif %}
+                </div>
+                
             </div>
             <button type="submit" name="change_password" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Change Password</button>
         </form>

@@ -4,7 +4,12 @@ from django.http import HttpResponse, Http404
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.views import PasswordChangeView
-from .forms import FileUploadForm, ShareSpaceAccessForm, PasswordChangingForm, UsernameChangingForm
+from .forms import (
+    FileUploadForm,
+    ShareSpaceAccessForm,
+    PasswordChangingForm,
+    UsernameChangingForm,
+)
 from django.conf import settings
 from .models import (
     ShareSpace,
@@ -360,25 +365,30 @@ def unfavorite_space(request, space_id):
         return redirect("home")
 
 
+@login_required
 def settings_view(request):
-    if request.method == 'POST':
-        if 'change_password' in request.POST:
+    if request.method == "POST":
+        if "change_password" in request.POST:
             password_form = PasswordChangingForm(request.user, request.POST)
             if password_form.is_valid():
                 password_form.save()
-                messages.success(request, 'Your password has been updated!')
+                messages.success(request, "Your password has been updated!")
         else:
             password_form = PasswordChangingForm(request.user)
 
-        if 'change_username' in request.POST:
+        if "change_username" in request.POST:
             username_form = UsernameChangingForm(request.POST, instance=request.user)
             if username_form.is_valid():
                 username_form.save()
-                messages.success(request, 'Your username has been updated!')
+                messages.success(request, "Your username has been updated!")
         else:
             username_form = UsernameChangingForm(instance=request.user)
     else:
         password_form = PasswordChangingForm(request.user)
         username_form = UsernameChangingForm(instance=request.user)
 
-    return render(request, 'app/settings.html', {'password_form': password_form, 'username_form': username_form})
+    return render(
+        request,
+        "app/settings.html",
+        {"password_form": password_form, "username_form": username_form},
+    )
