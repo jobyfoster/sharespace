@@ -2,16 +2,17 @@
 
 {% block page_title %}{{ share_space.title }} by {{ share_space.user.username }}{% endblock page_title %}
 
-
 {% block content %}
 <div class="container mx-auto mt-6">
-    <div class="space-header mb-6 flex justify-between items-center">
+    <div class="space-header mb-6 flex flex-col md:flex-row justify-between items-center">
         <div>
-            <h1 class="text-3xl font-semibold mb-1">{{ share_space.title }}<p class="inline font-semibold text-base text-gray-600 pl-2">by: {{ share_space.user.username }}</p></h1>
+            <h1 class="text-3xl font-semibold mb-1">{{ share_space.title }}
+                <p class="inline font-semibold text-base text-gray-600 pl-2">by: {{ share_space.user.username }}</p>
+            </h1>
             <p class="text-gray-600">{{ share_space.description }}</p>
         </div>
         <div>
-            <a href="{% url "home" %}"></a>
+            <input type="text" id="searchInput" placeholder="Search Files..." class="py-2 px-4 border rounded w-full md:w-1/3 mb-4 md:mb-0">
             <button class="options-button bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded inline-flex items-center">
                 <i class="fas fa-cog mr-1"></i>
                 <span>Options</span>
@@ -21,18 +22,13 @@
                     <a href="{% url 'home' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-pen-to-square"></i> Edit ShareSpace</a>
                     <a href="{% url 'delete_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-trash-can"></i> Delete</a>
                 {% else %}
-
                     {% if is_favorited %}
                         <a href="{% url 'unfavorite_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-heart"></i> Unfavorite</a>
                     {% else %}
                         <a href="{% url 'favorite_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-regular fa-heart"></i> Favorite</a>
                     {% endif %}
-            
                     <a href="{% url 'report_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-flag"></i> Report</a>
                 {% endif %}
-                
-                
-                
             </div>
         </div>
     </div>
@@ -79,18 +75,28 @@
             {% endfor %}
         </tbody>
     </table>
-
 </div>
 
 <script>
+    document.getElementById('searchInput').addEventListener('keyup', function(event) {
+        var searchQuery = event.target.value.toLowerCase();
+        var rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(function(row) {
+            var fileName = row.querySelector('td:first-child').textContent.toLowerCase();
+            if (fileName.includes(searchQuery)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
     document.addEventListener('DOMContentLoaded', (event) => {
-        // Select the options button and dropdown menu
         const optionsButton = document.querySelector('.options-button');
         const optionsDropdown = document.querySelector('.options-dropdown');
 
-        // Add click event listener to the options button
         optionsButton.addEventListener('click', function() {
-            // Toggle the 'hidden' class on the dropdown menu
             optionsDropdown.classList.toggle('hidden');
         });
     });
