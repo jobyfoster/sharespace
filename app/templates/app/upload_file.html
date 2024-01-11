@@ -7,8 +7,14 @@
 {% block content %}
 <div class="container mx-auto mt-10">
     <div class="card bg-white py-4 px-5 shadow-lg rounded-lg">
+        <!-- Add a loading animation container -->
+        <div id="loading-animation" class="hidden">
+            <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+            <lottie-player src="https://lottie.host/faa19306-f766-4816-84ba-20a67607f507/GwHR44XzNW.json" background="#ffffff" speed="1" style="width: 300px; height: 300px" loop autoplay direction="1" mode="normal"></lottie-player>
+        </div>
+
         <h3 class="text-2xl font-semibold text-gray-800">Create a New ShareSpace</h3>
-        <form method="POST" enctype="multipart/form-data" class="mt-4">
+        <form method="POST" enctype="multipart/form-data" class="mt-4" id="upload-form">
             {% csrf_token %}
             {{ form.non_field_errors }}
             <div class="mb-4">
@@ -71,4 +77,57 @@
 </div>
 
 <script src="{% static "js/uploadFile.js" %}" defer></script>
+
+<script src="https://cdn.jsdelivr.net/npm/lottie-web@5.7.4"></script>
+
+<script>
+    document.getElementById('upload-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // container overlay
+        var overlayContainer = document.createElement('div');
+        overlayContainer.id = 'overlay-container';
+        overlayContainer.style.position = 'fixed';
+        overlayContainer.style.top = '0';
+        overlayContainer.style.left = '0';
+        overlayContainer.style.width = '100%';
+        overlayContainer.style.height = '100%';
+        // semi-transparent overlay
+        overlayContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+
+        // animation continer
+        var loadingContainer = document.createElement('div');
+        loadingContainer.id = 'loading-animation-container';
+        loadingContainer.style.display = 'flex';
+        loadingContainer.style.justifyContent = 'center';
+        loadingContainer.style.alignItems = 'center';
+        loadingContainer.style.height = '100vh';
+
+        // animaiton element
+        var lottiePlayer = document.createElement('lottie-player');
+        lottiePlayer.src = 'https://lottie.host/faa19306-f766-4816-84ba-20a67607f507/GwHR44XzNW.json';
+        lottiePlayer.background = '#ffffff';
+        lottiePlayer.speed = '.95';
+        lottiePlayer.style.width = '300px';
+        lottiePlayer.style.height = '300px';
+        lottiePlayer.loop = true;
+        lottiePlayer.autoplay = true;
+
+        loadingContainer.appendChild(lottiePlayer);
+
+        overlayContainer.appendChild(loadingContainer);
+
+        document.body.appendChild(overlayContainer);
+
+        // delay
+        setTimeout(function () {
+            document.body.removeChild(overlayContainer);
+
+            event.target.submit();
+        }, 3000);
+    });
+</script>
+
+
+
 {% endblock content %}
