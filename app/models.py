@@ -2,6 +2,9 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils.timesince import timesince
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+from django.conf import settings
 import string
 import random
 import os
@@ -171,6 +174,15 @@ class UploadedFile(models.Model):
 def get_user_files(user):
     # Retrieves all files uploaded by a specific user.
     return UploadedFile.objects.filter(user=user)
+
+
+@receiver(pre_delete, sender=UploadedFile)
+def uploadedfile_delete(sender, instance, **kwargs):
+    # Delete the file from the filesystem
+    if instance.file:
+        file_path = os.path.join(settings.MEDIA_ROOT, instance.file.name)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
 
 
 class ReportStatus(models.TextChoices):

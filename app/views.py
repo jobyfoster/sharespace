@@ -9,6 +9,7 @@ from .forms import (
     ShareSpaceAccessForm,
     PasswordChangingForm,
     UsernameChangingForm,
+    EditShareSpaceForm,
 )
 from django.conf import settings
 from .models import (
@@ -39,6 +40,7 @@ from admin_panel.models import (
     create_audit_log_for_delete_space,
 )
 from django.db.models import Case, When
+from django.core.paginator import Paginator
 import os
 
 
@@ -97,6 +99,7 @@ def view_share_space(request, space_id):
 
     if is_space_taken_down(share_space):
         report = SpaceReport.objects.get(space_reported=share_space)
+        print(report)
 
         return render(request, "app/space_taken_down.html", {"report": report})
 
@@ -119,13 +122,20 @@ def view_share_space(request, space_id):
     # Checks if the user owns this ShareSpace
     is_favorited = share_space.is_favorited(user=request.user)
 
+    # Sets up pagination for the logs, displaying 10 per page
+    paginator = Paginator(share_space_files, 10)
+
+    # Gets the current page number from the request
+    page_number = request.GET.get("page")
+    files = paginator.get_page(page_number)  # Gets the files for the current page
+
     # Renders the ShareSpace page with its details and files.
     return render(
         request,
         "app/share_space.html",
         context={
             "share_space": share_space,
-            "files": share_space_files,
+            "files": files,
             "is_owner": is_owner,
             "is_favorited": is_favorited,
         },
@@ -182,9 +192,10 @@ def download_file_view(request, file_id):
     if not file_instance.share_space.is_accessible_by_user(user=request.user):
         # Displays an error message and redirects to the home page if the user lacks access.
         messages.error(
-            request, "You do not have access to the ShareSpace this file is in."
+            request,
+            "You do not have access to the ShareSpace this file is in, please enter the password.",
         )
-        return redirect("home")
+        return redirect("view_share_space", space_id=file_instance.share_space.id)
 
     # Checks if the file has been taken down due to a report.
     if is_file_taken_down(file_instance):
@@ -216,6 +227,7 @@ def download_file_view(request, file_id):
         file_content = f.read()
         f.close()
 
+    is_owner = file_instance.is_owner(user=request.user)
     # Pass the preview template name to the context
     return render(
         request,
@@ -223,6 +235,7 @@ def download_file_view(request, file_id):
         {
             "file": file_instance,
             "file_content": file_content,
+            "is_owner": is_owner,
             "preview_template": preview_template,
             "previewable_types": preview_templates.keys(),
         },
@@ -244,7 +257,14 @@ def user_spaces(request):
         (users_spaces | users_favorites).distinct().order_by("-created_at")
     )
 
-    return render(request, "app/user_files.html", {"spaces": combined_spaces})
+    # Sets up pagination for the logs, displaying 10 per page
+    paginator = Paginator(combined_spaces, 10)
+
+    # Gets the current page number from the request
+    page_number = request.GET.get("page")
+    spaces = paginator.get_page(page_number)  # Gets the spaces for the current page
+
+    return render(request, "app/user_files.html", {"spaces": spaces})
 
 
 @login_required
@@ -471,4 +491,26 @@ def settings_view(request):  # Defining a view function named 'settings_view'.
         request,
         "app/settings.html",
         {"password_form": password_form, "username_form": username_form},
+    )
+
+
+@login_required
+def edit_share_space(request, space_id):
+    share_space = get_object_or_404(ShareSpace, id=space_id)
+
+    if not share_space.is_owner(request.user):
+        messages.error(request, "You cannot edit ShareSpace's you do not own!")
+        return redirect("home")
+
+    if request.method == "POST":
+        form = EditShareSpaceForm(request.POST, instance=share_space)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "ShareSpace successfully edited!")
+            return redirect("view_share_space", space_id=space_id)
+    else:
+        form = EditShareSpaceForm(instance=share_space)
+
+    return render(
+        request, "app/edit_share_space.html", {"form": form, "share_space": share_space}
     )

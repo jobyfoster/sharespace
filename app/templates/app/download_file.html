@@ -15,9 +15,12 @@
             <button class="options-button p-2 rounded-md shadow-sm bg-gray-50 hover:bg-gray-200 transition transform duration-300 ease-in-out">
                 <i class="fas fa-cog text-gray-700"></i>
             </button>
-            <div class="options-dropdown absolute w-28 right-0 mt-2 hidden bg-white rounded-md shadow-xl z-10">
-                <a href="{% url 'report_file' file.id %}" class="dropdown-item block px-4 py-2 text-gray-800 hover:bg-gray-200"><i class="fa-solid fa-flag"></i> Report</a>
+            <div class="options-dropdown absolute w-28 right-0 mt-2 hidden bg-slate-50 rounded-md shadow-xl z-10">
+                {% if is_owner %}
                 <a href="{% url 'delete_file' file.id %}" class="dropdown-item block px-4 py-2 text-gray-800 hover:bg-gray-200"><i class="fa-solid fa-trash-can"></i> Delete</a>
+                {% else %}
+                <a href="{% url 'report_file' file.id %}" class="dropdown-item block px-4 py-2 text-gray-800 hover:bg-gray-200"><i class="fa-solid fa-flag"></i> Report</a>
+                {% endif %}
             </div>
         </div>
     </div>

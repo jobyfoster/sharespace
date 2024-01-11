@@ -101,6 +101,15 @@ def view_reviewed_file_reports(request):
 
 
 @group_required("Admin")
+def view_all_file_reports(request):
+    file_reports = get_file_reports()
+
+    return render(
+        request, "admin_panel/all_file_reports.html", {"reports": file_reports}
+    )
+
+
+@group_required("Admin")
 def view_unreviewed_space_reports(request):
     # Fetches a list of reports that are currently under review
     unreviewed_reports = get_under_review_space_reports()
@@ -117,13 +126,20 @@ def view_reviewed_space_reports(request):
     # Fetches a list of reports that are currently under review
     reviewed_reports = get_reviewed_space_reports()
 
-    for report in reviewed_reports:
-        print(report.status)
     # Renders a template with the unreviewed reports
     return render(
         request,
         "admin_panel/reviewed_space_reports.html",
         {"reports": reviewed_reports},
+    )
+
+
+@group_required("Admin")
+def view_all_space_reports(request):
+    space_reports = get_space_reports()
+
+    return render(
+        request, "admin_panel/all_space_reports.html", {"reports": space_reports}
     )
 
 

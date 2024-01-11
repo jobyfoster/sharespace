@@ -38,6 +38,11 @@ urlpatterns = [
         app_views.enter_space_password,
         name="space_password",
     ),
+    path(
+        "edit-space/<str:space_id>/",
+        app_views.edit_share_space,
+        name="edit_share_space",
+    ),
     path("download/<str:file_id>/", app_views.download_file_view, name="download"),
     path("report-file/<str:file_id>/", app_views.report_file, name="report_file"),
     path("report-space/<str:space_id>/", app_views.report_space, name="report_space"),
@@ -76,6 +81,11 @@ urlpatterns = [
         name="admin_review_reviewed_file_reports",
     ),
     path(
+        "admin-panel/file-reports/",
+        admin_views.view_all_file_reports,
+        name="admin_view_all_file_reports",
+    ),
+    path(
         "admin-panel/review-file-report/no-action-taken/<int:user_id>/<int:report_id>/",
         admin_views.review_file_no_action,
         name="review_file_no_action",
@@ -94,6 +104,11 @@ urlpatterns = [
         "admin-panel/review-space-report/action-taken/<int:user_id>/<int:report_id>/",
         admin_views.review_space_action_taken,
         name="review_space_action_taken",
+    ),
+    path(
+        "admin-panel/space-reports/",
+        admin_views.view_all_space_reports,
+        name="admin_view_all_space_reports",
     ),
     path(
         "admin-panel/audit-log/",
