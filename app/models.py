@@ -329,10 +329,10 @@ def get_reviewed_space_reports():
     return reviewed_reports
 
 
-def is_space_taken_down(file):
+def is_space_taken_down(space):
     # Checks if a file has been taken down based on a report action.
     return SpaceReport.objects.filter(
-        file_reported=file, status=ReportStatus.REVIEWED_ACTION_TAKEN
+        space_reported=space, status=ReportStatus.REVIEWED_ACTION_TAKEN
     ).exists()
 
 

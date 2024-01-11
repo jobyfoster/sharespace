@@ -26,6 +26,7 @@ from .models import (
     check_and_grant_access,
     get_user_favorites,
     create_favorited_space,
+    is_space_taken_down,
 )
 
 from admin_panel.models import (
@@ -93,6 +94,11 @@ def upload(request):
 def view_share_space(request, space_id):
     # Retrieves the ShareSpace with the given ID or shows a 404 error if not found.
     share_space = get_object_or_404(ShareSpace, id=space_id)
+
+    if is_space_taken_down(share_space):
+        report = SpaceReport.objects.get(space_reported=share_space)
+
+        return render(request, "app/space_taken_down.html", {"report": report})
 
     # Check if the current user has access to the ShareSpace.
     if not share_space.is_accessible_by_user(request.user):
@@ -234,7 +240,9 @@ def user_spaces(request):
     # Combine and sort the shared spaces and favorited spaces.
     # We use a queryset union and sort by 'created_at'.
     # 'distinct' is used to avoid duplicate entries.
-    combined_spaces = (users_spaces | users_favorites).distinct().order_by("created_at")
+    combined_spaces = (
+        (users_spaces | users_favorites).distinct().order_by("-created_at")
+    )
 
     return render(request, "app/user_files.html", {"spaces": combined_spaces})
 
