@@ -12,10 +12,20 @@
 
             <!-- Report Management Group -->
             <li>
-                <span class="block px-4 py-2 font-semibold">Report Management</span>
+                <span class="block px-4 py-2 font-semibold">Space Report Management</span>
                 <ul class="pl-4">
-                    <li><a href="{% url 'admin_review_new_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Unreviewed Reports</a></li>
-                    <li><a href="{% url 'admin_review_reviewed_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Reviewed Reports</a></li>
+                    <li><a href="{% url 'admin_review_new_space_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Unreviewed Reports</a></li>
+                    <li><a href="{% url 'admin_review_reviewed_space_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Reviewed Reports</a></li>
+                    <li><a href="{% url 'home' %}" class="block px-4 py-2 hover:bg-gray-800">All Reports</a></li>
+                    <!-- More Report Management links -->
+                </ul>
+            </li>
+
+            <li>
+                <span class="block px-4 py-2 font-semibold">File Report Management</span>
+                <ul class="pl-4">
+                    <li><a href="{% url 'admin_review_new_file_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Unreviewed Reports</a></li>
+                    <li><a href="{% url 'admin_review_reviewed_file_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Reviewed Reports</a></li>
                     <li><a href="{% url 'home' %}" class="block px-4 py-2 hover:bg-gray-800">All Reports</a></li>
                     <!-- More Report Management links -->
                 </ul>
@@ -43,8 +53,4 @@
         </div>
     </div>
 </div>
-
-<!-- Custom JavaScript -->
-<script src="{% static 'js/main.js' %}"></script>
-
 {% endblock content %}

@@ -28,7 +28,7 @@ urlpatterns = [
     path("login/", user_views.signin, name="login"),
     path("logout/", user_views.log_out, name="logout"),
     # App Views
-    path('settings/', app_views.settings_view, name='settings'),
+    path("settings/", app_views.settings_view, name="settings"),
     path("", app_views.home, name="home"),
     path("upload/", app_views.upload, name="upload"),
     path("spaces/", app_views.user_spaces, name="user_spaces"),
@@ -39,7 +39,8 @@ urlpatterns = [
         name="space_password",
     ),
     path("download/<str:file_id>/", app_views.download_file_view, name="download"),
-    path("report/<str:file_id>/", app_views.report_file, name="report"),
+    path("report-file/<str:file_id>/", app_views.report_file, name="report_file"),
+    path("report-space/<str:space_id>/", app_views.report_space, name="report_space"),
     path("delete-file/<str:file_id>/", app_views.delete_file, name="delete_file"),
     path("delete-space/<str:space_id>/", app_views.delete_space, name="delete_space"),
     path(
@@ -55,24 +56,44 @@ urlpatterns = [
     # Admin Views
     path("admin-panel/", admin_views.admin_panel, name="admin_panel"),
     path(
-        "admin-panel/unreviewed-reports/",
-        admin_views.view_unreviewed_reports,
-        name="admin_review_new_reports",
+        "admin-panel/unreviewed-space-reports/",
+        admin_views.view_unreviewed_space_reports,
+        name="admin_review_new_space_reports",
     ),
     path(
-        "admin-panel/reviewed-reports/",
-        admin_views.view_reviewed_reports,
-        name="admin_review_reviewed_reports",
+        "admin-panel/reviewed-space-reports/",
+        admin_views.view_reviewed_space_reports,
+        name="admin_review_reviewed_space_reports",
     ),
     path(
-        "admin-panel/review-report/no-action-taken/<int:user_id>/<int:report_id>/",
-        admin_views.report_no_action,
-        name="report_no_action",
+        "admin-panel/unreviewed-file-reports/",
+        admin_views.view_unreviewed_file_reports,
+        name="admin_review_new_file_reports",
     ),
     path(
-        "admin-panel/review-report/action-taken/<int:user_id>/<int:report_id>/",
-        admin_views.report_action_taken,
-        name="report_action_taken",
+        "admin-panel/reviewed-file-reports/",
+        admin_views.view_reviewed_file_reports,
+        name="admin_review_reviewed_file_reports",
+    ),
+    path(
+        "admin-panel/review-file-report/no-action-taken/<int:user_id>/<int:report_id>/",
+        admin_views.review_file_no_action,
+        name="review_file_no_action",
+    ),
+    path(
+        "admin-panel/review-file-report/action-taken/<int:user_id>/<int:report_id>/",
+        admin_views.review_file_action_taken,
+        name="review_file_action_taken",
+    ),
+    path(
+        "admin-panel/review-space-report/no-action-taken/<int:user_id>/<int:report_id>/",
+        admin_views.review_space_no_action,
+        name="review_space_no_action",
+    ),
+    path(
+        "admin-panel/review-space-report/action-taken/<int:user_id>/<int:report_id>/",
+        admin_views.review_space_action_taken,
+        name="review_space_action_taken",
     ),
     path(
         "admin-panel/audit-log/",

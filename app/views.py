@@ -14,11 +14,13 @@ from django.conf import settings
 from .models import (
     ShareSpace,
     UploadedFile,
-    Report,
+    FileReport,
+    SpaceReport,
     ShareSpaceAccess,
     Favorite,
     get_user_spaces,
-    create_report,
+    create_file_report,
+    create_space_report,
     is_file_taken_down,
     create_shared_space,
     check_and_grant_access,
@@ -28,9 +30,10 @@ from .models import (
 
 from admin_panel.models import (
     AuditLog,
-    create_audit_log_for_report_change,
+    create_audit_log_for_file_report_change,
     create_audit_log_for_space_creation,
-    create_audit_log_for_report_submitted,
+    create_audit_log_for_file_report_submitted,
+    create_audit_log_for_space_report_submitted,
     create_audit_log_for_invalid_space_password,
     create_audit_log_for_delete_space,
 )
@@ -180,7 +183,7 @@ def download_file_view(request, file_id):
     # Checks if the file has been taken down due to a report.
     if is_file_taken_down(file_instance):
         # Fetches the report associated with the file.
-        report = Report.objects.get(file_reported=file_instance)
+        report = FileReport.objects.get(file_reported=file_instance)
         # Renders a page indicating the file has been taken down, displaying the report details.
         return render(request, "app/file_taken_down.html", {"report": report})
 
@@ -251,17 +254,33 @@ def report_file(request, file_id):
         # Redirects back to the file download page.
         return redirect("download", file_id=file_id)
 
-    # Creates a new report.
-    new_report = create_report(
+    if reported_file.has_user_reported(reported_by):
+        messages.error(request, "You have already reported this file before!")
+        # Redirects back to the ShareSpace page.
+        return redirect("download", file_id=file_id)
+
+    if len(reported_file.reports.all()) > 0:
+        messages.error(
+            request,
+            "Somebody has already reported this file! An admin will review it soon!",
+        )
+        # Redirects back to the ShareSpace page.
+        return redirect("download", file_id=file_id)
+
+    # Creates a new file report.
+    new_report = create_file_report(
         reported_by=reported_by,
         user_reported=user_reported,
         file_reported=reported_file,
     )
 
     # Shows a success message upon submitting the report.
-    messages.success(request, "Report successfully submitted!")
+    messages.success(
+        request,
+        "Successfully reported this file! An admin will review your report soon!",
+    )
     # Creates an audit log for the submission of this report.
-    create_audit_log_for_report_submitted(new_report)
+    create_audit_log_for_file_report_submitted(new_report)
     # Redirects back to the file download page.
     return redirect("download", file_id=file_id)
 
@@ -289,6 +308,47 @@ def delete_file(request, file_id):
     messages.success(request, "File deleted successfully!")
     # Redirects to the home page.
     return redirect("home")
+
+
+@login_required
+def report_space(request, space_id):
+    reported_by = request.user
+    space_reported = get_object_or_404(ShareSpace, id=space_id)
+    user_reported = space_reported.user
+
+    # Prevents users from reporting their own ShareSpaces.
+    if reported_by == user_reported:
+        messages.error(request, "You cannot report a ShareSpace that you own.")
+        # Redirects back to the ShareSpace page.
+        return redirect("view_share_space", space_id=space_id)
+
+    if space_reported.has_user_reported(reported_by):
+        messages.error(request, "You have already reported this ShareSpace before!")
+        # Redirects back to the ShareSpace page.
+        return redirect("view_share_space", space_id=space_id)
+
+    if len(space_reported.reports.all()) > 0:
+        messages.error(
+            request,
+            "Somebody has already reported this ShareSpace! An admin will review it soon!",
+        )
+        # Redirects back to the ShareSpace page.
+        return redirect("view_share_space", space_id=space_id)
+
+    new_report = create_space_report(
+        reported_by=reported_by,
+        user_reported=user_reported,
+        space_reported=space_reported,
+    )
+
+    messages.success(
+        request,
+        "Successfully reported this ShareSpace! An admin will review your report soon!",
+    )
+    # Creates an audit log for the submission of this report.
+    create_audit_log_for_space_report_submitted(new_report)
+    # Redirects back to the ShareSpace page.
+    return redirect("view_share_space", space_id=space_id)
 
 
 @login_required
@@ -366,27 +426,39 @@ def unfavorite_space(request, space_id):
 
 
 @login_required
-def settings_view(request):
-    if request.method == "POST":
-        if "change_password" in request.POST:
+def settings_view(request):  # Defining a view function named 'settings_view'.
+    if request.method == "POST":  # Checking if the request is a POST request.
+        if (
+            "change_password" in request.POST
+        ):  # Check if the 'change_password' action was triggered.
+            # Creating a PasswordChangingForm with the current user and POST data.
             password_form = PasswordChangingForm(request.user, request.POST)
-            if password_form.is_valid():
-                password_form.save()
+            if password_form.is_valid():  # Validating the form.
+                password_form.save()  # If valid, save the new password.
+                # Display a success message to the user.
                 messages.success(request, "Your password has been updated!")
         else:
+            # If it's not a password change request, initialize the form without POST data.
             password_form = PasswordChangingForm(request.user)
 
-        if "change_username" in request.POST:
+        if (
+            "change_username" in request.POST
+        ):  # Check if the 'change_username' action was triggered.
+            # Creating a UsernameChangingForm with POST data and the current user instance.
             username_form = UsernameChangingForm(request.POST, instance=request.user)
-            if username_form.is_valid():
-                username_form.save()
+            if username_form.is_valid():  # Validating the form.
+                username_form.save()  # If valid, save the new username.
+                # Display a success message to the user.
                 messages.success(request, "Your username has been updated!")
         else:
+            # If it's not a username change request, initialize the form with the current user instance.
             username_form = UsernameChangingForm(instance=request.user)
     else:
+        # For a GET request, initialize both forms without POST data.
         password_form = PasswordChangingForm(request.user)
         username_form = UsernameChangingForm(instance=request.user)
 
+    # Rendering the 'settings.html' template with the context containing both forms.
     return render(
         request,
         "app/settings.html",

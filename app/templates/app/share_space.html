@@ -28,7 +28,7 @@
                         <a href="{% url 'favorite_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-regular fa-heart"></i> Favorite</a>
                     {% endif %}
             
-                    <a href="{% url 'home' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-flag"></i> Report</a>
+                    <a href="{% url 'report_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-flag"></i> Report</a>
                 {% endif %}
                 
                 

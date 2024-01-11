@@ -11,8 +11,10 @@ class AuditLog(models.Model):
         ("login", "Login"),
         ("file_upload", "File Upload"),
         ("delete_space", "Delete Space"),
-        ("report_submitted", "Report Submitted"),
-        ("report_change", "Report Change"),
+        ("file_report_submitted", "File Report Submitted"),
+        ("file_report_change", "File Report Change"),
+        ("space_report_submitted", "ShareSpace Report Submitted"),
+        ("space_report_change", "Space Report Change"),
         ("invalid_space_password", "Invalid ShareSpace Password Provided"),
     ]
 
@@ -70,24 +72,48 @@ def create_audit_log_for_space_creation(user, space):
     return new_log  # Returning the log object
 
 
-def create_audit_log_for_report_submitted(report):
+def create_audit_log_for_file_report_submitted(report):
     # Creating a log when a report is submitted
     new_log = AuditLog.objects.create(
         user=report.reported_by,
-        action="report_submitted",
-        message=f"{report.reported_by.username}({report.reported_by.id}) has submitted a report on {report.user_reported.username}({report.user_reported.id}).",
+        action="file_report_submitted",
+        message=f"{report.reported_by.username}({report.reported_by.id}) has submitted a file report on {report.user_reported.username}({report.user_reported.id}).",
     )
     new_log.save()  # Saving the log
 
     return new_log  # Returning the log object
 
 
-def create_audit_log_for_report_change(user, report):
+def create_audit_log_for_space_report_submitted(report):
+    # Creating a log when a report is submitted
+    new_log = AuditLog.objects.create(
+        user=report.reported_by,
+        action="space_report_submitted",
+        message=f"{report.reported_by.username}({report.reported_by.id}) has submitted a ShareSpace report on {report.user_reported.username}({report.user_reported.id}).",
+    )
+    new_log.save()  # Saving the log
+
+    return new_log  # Returning the log object
+
+
+def create_audit_log_for_file_report_change(user, report):
     # Creating a log for a change in report status
     new_log = AuditLog.objects.create(
         user=user,
-        action="report_change",
-        message=f"{report.reviewed_by.username}({report.reported_by.id}) has changed the status of Report #{report.id} to {report.get_status_display()}.",
+        action="file_report_change",
+        message=f"{report.reviewed_by.username}({report.reported_by.id}) has changed the status of File Report #{report.id} to {report.get_status_display()}.",
+    )
+    new_log.save()  # Saving the log
+
+    return new_log  # Returning the log object
+
+
+def create_audit_log_for_space_report_change(user, report):
+    # Creating a log for a change in report status
+    new_log = AuditLog.objects.create(
+        user=user,
+        action="space_report_change",
+        message=f"{report.reviewed_by.username}({report.reported_by.id}) has changed the status of ShareSpace Report #{report.id} to {report.get_status_display()}.",
     )
     new_log.save()  # Saving the log
 

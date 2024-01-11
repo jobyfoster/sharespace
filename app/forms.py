@@ -70,17 +70,42 @@ class ShareSpaceAccessForm(forms.Form):
 
 
 class PasswordChangingForm(PasswordChangeForm):
-    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Old Password'}))
-    new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'New Password'}))
-    new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm New Password'}))
+    # Customizing the 'old_password' field with specific widget attributes.
+    old_password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "placeholder": "Old Password"}
+        )
+    )
+    # Customizing the 'new_password1' field (where user enters new password).
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "placeholder": "New Password"}
+        )
+    )
+    # Customizing the 'new_password2' field (for confirming the new password).
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "placeholder": "Confirm New Password"}
+        )
+    )
 
-    class Meta:
-        model = User
-        fields = ['old_password', 'new_password1', 'new_password2']
+    class Meta:  # Meta class for additional info about the form.
+        model = User  # Specifying the Django User model as the model for this form.
+        fields = [
+            "old_password",
+            "new_password1",
+            "new_password2",
+        ]  # Fields to be used in the form.
+
 
 class UsernameChangingForm(forms.ModelForm):
-    username = forms.CharField(max_length=150, required=True, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.')
+    # Defining a 'username' field with max length and a help text.
+    username = forms.CharField(
+        max_length=150,
+        required=True,
+        help_text="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+    )
 
-    class Meta:
-        model = User
-        fields = ['username']
+    class Meta:  # Meta class for this form.
+        model = User  # Specifying the Django User model for this form.
+        fields = ["username"]  # Including only the 'username' field.

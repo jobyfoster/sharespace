@@ -68,6 +68,11 @@ class ShareSpace(models.Model):
     def is_favorited(self, user):
         return Favorite.objects.filter(user=user, share_space=self).exists()
 
+    def has_user_reported(self, user):
+        return SpaceReport.objects.filter(
+            reported_by=user, space_reported=self
+        ).exists()
+
     def __str__(self):
         # String representation of the ShareSpace.
         return f"Share Space #{self.id} by {self.user.username}"
@@ -149,6 +154,9 @@ class UploadedFile(models.Model):
         # Returns a human-readable time since the file was uploaded.
         return timesince(self.upload_date)
 
+    def has_user_reported(self, user):
+        return FileReport.objects.filter(reported_by=user, file_reported=self).exists()
+
     def save(self, *args, **kwargs):
         # Custom save method to automatically set the file type
         if self.file:
@@ -165,21 +173,23 @@ def get_user_files(user):
     return UploadedFile.objects.filter(user=user)
 
 
-class Report(models.Model):
-    # Nested class for defining report status choices
-    class ReportStatus(models.TextChoices):
-        UNDER_REVIEW = "UR", "Under Review"
-        REVIEWED_NO_ACTION = "RNA", "No Action Taken"
-        REVIEWED_ACTION_TAKEN = "RAT", "Action Taken"
+class ReportStatus(models.TextChoices):
+    UNDER_REVIEW = "UR", "Under Review"
+    REVIEWED_NO_ACTION = "RNA", "No Action Taken"
+    REVIEWED_ACTION_TAKEN = "RAT", "Action Taken"
 
+
+class FileReport(models.Model):
     # Fields of the Report model
     reported_by = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="reports_sent"
+        User, on_delete=models.CASCADE, related_name="file_reports_sent"
     )
     user_reported = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="reports_received"
+        User, on_delete=models.CASCADE, related_name="file_reports_received"
     )
-    file_reported = models.ForeignKey(UploadedFile, on_delete=models.CASCADE)
+    file_reported = models.ForeignKey(
+        UploadedFile, on_delete=models.CASCADE, related_name="reports"
+    )
     date_submitted = models.DateTimeField(
         auto_now_add=True
     )  # Date of report submission
@@ -193,7 +203,7 @@ class Report(models.Model):
     )
 
     reviewed_by = models.ForeignKey(
-        User, related_name="reports_reviewed", null=True, on_delete=models.CASCADE
+        User, related_name="file_reports_reviewed", null=True, on_delete=models.CASCADE
     )
 
     def time_since_submission(self):
@@ -202,12 +212,12 @@ class Report(models.Model):
 
     def __str__(self):
         # String representation of a Report instance
-        return f"Report #{self.id} on {self.user_reported.username}"
+        return f"File Report #{self.id} on {self.user_reported.username}"
 
 
-def create_report(reported_by, user_reported, file_reported):
+def create_file_report(reported_by, user_reported, file_reported):
     # Creates a new report
-    new_report = Report.objects.create(
+    new_report = FileReport.objects.create(
         reported_by=reported_by,
         user_reported=user_reported,
         file_reported=file_reported,
@@ -217,9 +227,9 @@ def create_report(reported_by, user_reported, file_reported):
     return new_report  # Returns the created report
 
 
-def get_reports():
+def get_file_reports():
     # Retrieves all reports.
-    return Report.objects.all()
+    return FileReport.objects.all()
 
 
 def review_report(report, reviewed_by, action):
@@ -229,27 +239,100 @@ def review_report(report, reviewed_by, action):
     report.save()  # Saves the changes to the database.
 
 
-def get_under_review_reports():
+def get_under_review_file_reports():
     # Fetches reports that are currently under review.
-    under_review_reports = Report.objects.filter(
-        status=Report.ReportStatus.UNDER_REVIEW
-    )
+    under_review_reports = FileReport.objects.filter(status=ReportStatus.UNDER_REVIEW)
     return under_review_reports
 
 
-def get_reviewed_reports():
+def get_reviewed_file_reports():
     # Fetches reports that have been reviewed, either action taken or no action.
-    reviewed_reports = Report.objects.filter(
-        Q(status=Report.ReportStatus.REVIEWED_ACTION_TAKEN)
-        | Q(status=Report.ReportStatus.REVIEWED_NO_ACTION)
+    reviewed_reports = FileReport.objects.filter(
+        Q(status=ReportStatus.REVIEWED_ACTION_TAKEN)
+        | Q(status=ReportStatus.REVIEWED_NO_ACTION)
     )
     return reviewed_reports
 
 
 def is_file_taken_down(file):
     # Checks if a file has been taken down based on a report action.
-    return Report.objects.filter(
-        file_reported=file, status=Report.ReportStatus.REVIEWED_ACTION_TAKEN
+    return FileReport.objects.filter(
+        file_reported=file, status=ReportStatus.REVIEWED_ACTION_TAKEN
+    ).exists()
+
+
+class SpaceReport(models.Model):
+    # Fields of the Report model
+    reported_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="space_reports_sent"
+    )
+    user_reported = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="space_reports_received"
+    )
+    space_reported = models.ForeignKey(
+        ShareSpace, on_delete=models.CASCADE, related_name="reports"
+    )
+    date_submitted = models.DateTimeField(
+        auto_now_add=True
+    )  # Date of report submission
+
+    # Status of the report, with predefined choices
+    status = models.CharField(
+        max_length=3,
+        choices=ReportStatus.choices,
+        default=ReportStatus.UNDER_REVIEW,
+        editable=True,
+    )
+
+    reviewed_by = models.ForeignKey(
+        User, related_name="space_reports_reviewed", null=True, on_delete=models.CASCADE
+    )
+
+    def time_since_submission(self):
+        # Returns the time since the report was submitted in a human-readable format
+        return timesince(self.date_submitted)
+
+    def __str__(self):
+        # String representation of a Report instance
+        return f"ShareSpace Report #{self.id} on {self.user_reported.username}"
+
+
+def create_space_report(reported_by, user_reported, space_reported):
+    # Creates a new report
+    new_report = SpaceReport.objects.create(
+        reported_by=reported_by,
+        user_reported=user_reported,
+        space_reported=space_reported,
+    )
+    new_report.save()  # Saves the report to the database
+
+    return new_report  # Returns the created report
+
+
+def get_space_reports():
+    # Retrieves all reports.
+    return SpaceReport.objects.all()
+
+
+def get_under_review_space_reports():
+    # Fetches reports that are currently under review.
+    under_review_reports = SpaceReport.objects.filter(status=ReportStatus.UNDER_REVIEW)
+    return under_review_reports
+
+
+def get_reviewed_space_reports():
+    # Fetches reports that have been reviewed, either action taken or no action.
+    reviewed_reports = SpaceReport.objects.filter(
+        Q(status=ReportStatus.REVIEWED_ACTION_TAKEN)
+        | Q(status=ReportStatus.REVIEWED_NO_ACTION)
+    )
+    return reviewed_reports
+
+
+def is_space_taken_down(file):
+    # Checks if a file has been taken down based on a report action.
+    return SpaceReport.objects.filter(
+        file_reported=file, status=ReportStatus.REVIEWED_ACTION_TAKEN
     ).exists()
 
 

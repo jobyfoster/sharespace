@@ -16,7 +16,7 @@
                 <i class="fas fa-cog text-gray-700"></i>
             </button>
             <div class="options-dropdown absolute w-28 right-0 mt-2 hidden bg-white rounded-md shadow-xl z-10">
-                <a href="{% url 'report' file.id %}" class="dropdown-item block px-4 py-2 text-gray-800 hover:bg-gray-200"><i class="fa-solid fa-flag"></i> Report</a>
+                <a href="{% url 'report_file' file.id %}" class="dropdown-item block px-4 py-2 text-gray-800 hover:bg-gray-200"><i class="fa-solid fa-flag"></i> Report</a>
                 <a href="{% url 'delete_file' file.id %}" class="dropdown-item block px-4 py-2 text-gray-800 hover:bg-gray-200"><i class="fa-solid fa-trash-can"></i> Delete</a>
             </div>
         </div>

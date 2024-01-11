@@ -2,7 +2,7 @@
 
 {% block admin_content %}
 <div class="reports-container container mx-auto p-5">
-    <h1 class="text-3xl font-semibold pb-5">Reviewed Reports: {{ reports|length }}</h1>
+    <h1 class="text-3xl font-semibold pb-5">Reviewed File Reports: {{ reports|length }}</h1>
     <div class="reports grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for report in reports %}
         <div class="report-card bg-gray-50 py-5 px-6 border border-gray-300 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -25,17 +25,17 @@
             
         
             <div class="flex flex-wrap gap-2 justify-between mt-5">                
-                <form action="{% url 'report_no_action' request.user.id report.id %}" method="post">
+                <form action="{% url 'review_space_no_action' request.user.id report.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="px-5 py-2 text-sm font-semibold text-white {% if report.status != "RNA" %}bg-green-500 hover:bg-green-600 {% else %}bg-green-300 {% endif %}rounded-md focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-2 transition duration-300 ease-in-out" {% if report.status == "RNA" %}disabled{% endif %}>No Action Taken</button>
                 </form>
                 
-                <form action="{% url 'report_action_taken' request.user.id report.id %}" method="post">
+                <form action="{% url 'review_space_action_taken' request.user.id report.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="px-5 py-2 text-sm font-semibold text-white rounded-md {% if report.status != "RAT" %}bg-red-500 hover:bg-red-600 {% else %}bg-red-300 {% endif %}focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 transition duration-300 ease-in-out" {% if report.status == "RAT" %}disabled{% endif %}>Action Taken</button>
                 </form>
 
-                <a href="{% url 'download' report.file_reported.id %}" class="px-5 py-2 text-sm font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition duration-300 ease-in-out" target="_blank">View File</a>
+                <a href="{% url 'view_share_space' report.space_reported.id %}" class="px-5 py-2 text-sm font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition duration-300 ease-in-out" target="_blank">View File</a>
             </div>
         </div>
         
