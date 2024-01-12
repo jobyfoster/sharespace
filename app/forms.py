@@ -109,3 +109,29 @@ class UsernameChangingForm(forms.ModelForm):
     class Meta:  # Meta class for this form.
         model = User  # Specifying the Django User model for this form.
         fields = ["username"]  # Including only the 'username' field.
+
+
+class EditShareSpaceForm(forms.ModelForm):
+    class Meta:
+        model = ShareSpace
+        fields = ["title", "description", "visibility", "password"]
+        widgets = {
+            "password": forms.PasswordInput(),  # To render password field appropriately
+        }
+
+    def clean_password(self):
+        cleaned_data = super().clean()  # Cleans the data using the parent class method
+        # Custom validation for the password field
+        password = cleaned_data.get("password")
+        visibility = cleaned_data.get("visibility")
+
+        # Password is required if visibility is set to PASSWORD_PROTECTED
+        if (
+            visibility == ShareSpace.VisibilityChoices.PASSWORD_PROTECTED
+            and not password
+        ):
+            raise forms.ValidationError(
+                "Password is required for password-protected spaces."
+            )
+
+        return password

@@ -16,7 +16,7 @@
                 <ul class="pl-4">
                     <li><a href="{% url 'admin_review_new_space_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Unreviewed Reports</a></li>
                     <li><a href="{% url 'admin_review_reviewed_space_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Reviewed Reports</a></li>
-                    <li><a href="{% url 'home' %}" class="block px-4 py-2 hover:bg-gray-800">All Reports</a></li>
+                    <li><a href="{% url 'admin_view_all_space_reports' %}" class="block px-4 py-2 hover:bg-gray-800">All ShareSpace Reports</a></li>
                     <!-- More Report Management links -->
                 </ul>
             </li>
@@ -26,22 +26,12 @@
                 <ul class="pl-4">
                     <li><a href="{% url 'admin_review_new_file_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Unreviewed Reports</a></li>
                     <li><a href="{% url 'admin_review_reviewed_file_reports' %}" class="block px-4 py-2 hover:bg-gray-800">Reviewed Reports</a></li>
-                    <li><a href="{% url 'home' %}" class="block px-4 py-2 hover:bg-gray-800">All Reports</a></li>
+                    <li><a href="{% url 'admin_view_all_file_reports' %}" class="block px-4 py-2 hover:bg-gray-800">All File Reports</a></li>
                     <!-- More Report Management links -->
                 </ul>
             </li>
 
             <li><a href="{% url 'audit_log' %}" class="block px-4 py-2 hover:bg-gray-800">Audit Log</a></li>
-
-
-            <!-- User Management Group -->
-            {% comment %} <li>
-                <span class="block px-4 py-2 font-semibold">User Management</span>
-                <ul class="pl-4">
-                    <li><a href="{% url 'home' %}" class="block px-4 py-2">User List</a></li>
-                    <!-- More User Management links -->
-                </ul>
-            </li> {% endcomment %}
         </ul>
     </div>
 

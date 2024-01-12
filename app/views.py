@@ -9,6 +9,7 @@ from .forms import (
     ShareSpaceAccessForm,
     PasswordChangingForm,
     UsernameChangingForm,
+    EditShareSpaceForm,
 )
 from django.conf import settings
 from .models import (
@@ -39,6 +40,7 @@ from admin_panel.models import (
     create_audit_log_for_delete_space,
 )
 from django.db.models import Case, When
+from django.core.paginator import Paginator
 import os
 
 
@@ -92,44 +94,47 @@ def upload(request):
 
 @login_required
 def view_share_space(request, space_id):
-    # Retrieves the ShareSpace with the given ID or shows a 404 error if not found.
     share_space = get_object_or_404(ShareSpace, id=space_id)
 
     if is_space_taken_down(share_space):
         report = SpaceReport.objects.get(space_reported=share_space)
-
         return render(request, "app/space_taken_down.html", {"report": report})
 
-    # Check if the current user has access to the ShareSpace.
     if not share_space.is_accessible_by_user(request.user):
-        # Redirects to a password input page for password-protected spaces.
         if share_space.visibility == ShareSpace.VisibilityChoices.PASSWORD_PROTECTED:
             return redirect("space_password", space_id=space_id)
-        # Shows an error message and redirects to the home page for private spaces.
         elif share_space.visibility == ShareSpace.VisibilityChoices.PRIVATE:
-            messages.error(
-                request, "This is a private ShareSpace that you do not have access to!"
-            )
+            messages.error(request, "This is a private ShareSpace that you do not have access to!")
             return redirect("home")
 
-    # Retrieves all files associated with this ShareSpace.
     share_space_files = share_space.files.all()
-    # Checks if the user owns this ShareSpace
+
+    # Implementing search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        # Assuming 'file' field contains the filename or filepath
+        share_space_files = share_space_files.filter(file__icontains=search_query)
+
     is_owner = share_space.is_owner(user=request.user)
-    # Checks if the user owns this ShareSpace
     is_favorited = share_space.is_favorited(user=request.user)
 
-    # Renders the ShareSpace page with its details and files.
+    # Pagination
+    paginator = Paginator(share_space_files, 10)  # Adjust the number per page as needed
+    page_number = request.GET.get("page")
+    files = paginator.get_page(page_number)
+
     return render(
         request,
         "app/share_space.html",
-        context={
+        {
             "share_space": share_space,
-            "files": share_space_files,
+            "files": files,
             "is_owner": is_owner,
             "is_favorited": is_favorited,
-        },
+        }
     )
+
+
 
 
 @login_required
@@ -182,9 +187,10 @@ def download_file_view(request, file_id):
     if not file_instance.share_space.is_accessible_by_user(user=request.user):
         # Displays an error message and redirects to the home page if the user lacks access.
         messages.error(
-            request, "You do not have access to the ShareSpace this file is in."
+            request,
+            "You do not have access to the ShareSpace this file is in, please enter the password.",
         )
-        return redirect("home")
+        return redirect("view_share_space", space_id=file_instance.share_space.id)
 
     # Checks if the file has been taken down due to a report.
     if is_file_taken_down(file_instance):
@@ -216,6 +222,7 @@ def download_file_view(request, file_id):
         file_content = f.read()
         f.close()
 
+    is_owner = file_instance.is_owner(user=request.user)
     # Pass the preview template name to the context
     return render(
         request,
@@ -223,6 +230,7 @@ def download_file_view(request, file_id):
         {
             "file": file_instance,
             "file_content": file_content,
+            "is_owner": is_owner,
             "preview_template": preview_template,
             "previewable_types": preview_templates.keys(),
         },
@@ -231,20 +239,23 @@ def download_file_view(request, file_id):
 
 @login_required
 def user_spaces(request):
-    # Retrieve all shared spaces created by the user.
+    search_query = request.GET.get('search', '')  # Get the search term from the request
+
+    # Retrieve all shared spaces created or favorited by the user
     users_spaces = get_user_spaces(user=request.user)
-
-    # Retrieve all shared spaces favorited by the user.
     users_favorites = get_user_favorites(user=request.user)
+    combined_spaces = (users_spaces | users_favorites).distinct().order_by("-created_at")
 
-    # Combine and sort the shared spaces and favorited spaces.
-    # We use a queryset union and sort by 'created_at'.
-    # 'distinct' is used to avoid duplicate entries.
-    combined_spaces = (
-        (users_spaces | users_favorites).distinct().order_by("-created_at")
-    )
+    # If there is a search term, filter the combined spaces
+    if search_query:
+        combined_spaces = combined_spaces.filter(title__icontains=search_query)
 
-    return render(request, "app/user_files.html", {"spaces": combined_spaces})
+    paginator = Paginator(combined_spaces, 10)
+    page_number = request.GET.get("page")
+    spaces = paginator.get_page(page_number)
+
+    return render(request, "app/user_files.html", {"spaces": spaces})
+
 
 
 @login_required
@@ -471,4 +482,26 @@ def settings_view(request):  # Defining a view function named 'settings_view'.
         request,
         "app/settings.html",
         {"password_form": password_form, "username_form": username_form},
+    )
+
+
+@login_required
+def edit_share_space(request, space_id):
+    share_space = get_object_or_404(ShareSpace, id=space_id)
+
+    if not share_space.is_owner(request.user):
+        messages.error(request, "You cannot edit ShareSpace's you do not own!")
+        return redirect("home")
+
+    if request.method == "POST":
+        form = EditShareSpaceForm(request.POST, instance=share_space)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "ShareSpace successfully edited!")
+            return redirect("view_share_space", space_id=space_id)
+    else:
+        form = EditShareSpaceForm(instance=share_space)
+
+    return render(
+        request, "app/edit_share_space.html", {"form": form, "share_space": share_space}
     )

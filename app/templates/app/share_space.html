@@ -4,22 +4,25 @@
 
 {% block content %}
 <div class="container mx-auto mt-6">
-    <div class="space-header mb-6 flex flex-col md:flex-row justify-between items-center">
+    <div class="space-header mb-6 flex justify-between items-center">
         <div>
             <h1 class="text-3xl font-semibold mb-1">{{ share_space.title }}
                 <p class="inline font-semibold text-base text-gray-600 pl-2">by: {{ share_space.user.username }}</p>
             </h1>
             <p class="text-gray-600">{{ share_space.description }}</p>
         </div>
-        <div>
-            <input type="text" id="searchInput" placeholder="Search Files..." class="py-2 px-4 border rounded w-full md:w-1/3 mb-4 md:mb-0">
+        <div class="flex items-center">
+            <form action="" method="get" class="mr-4">
+                <input type="text" name="search" placeholder="Search files..." value="{{ request.GET.search }}" class="text-sm">
+                <button type="submit" class="text-sm">Search</button>
+            </form>
             <button class="options-button bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded inline-flex items-center">
                 <i class="fas fa-cog mr-1"></i>
                 <span>Options</span>
             </button>
-            <div class="options-dropdown hidden absolute bg-white shadow-lg rounded-lg mt-2 w-48">
+            <div class="options-dropdown hidden absolute bg-slate-50 shadow-lg rounded-lg mt-2 w-48">
                 {% if is_owner %}
-                    <a href="{% url 'home' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-pen-to-square"></i> Edit ShareSpace</a>
+                    <a href="{% url 'edit_share_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-pen-to-square"></i> Edit ShareSpace</a>
                     <a href="{% url 'delete_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-trash-can"></i> Delete</a>
                 {% else %}
                     {% if is_favorited %}
@@ -75,31 +78,50 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <div class="pagination-container mt-5 py-3">
+        <nav class="flex justify-center">
+            <ul class="inline-flex items-center space-x-1">
+                {% if files.has_previous %}
+                    <li>
+                        <a href="?page=1&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">First</a>
+                    </li>
+                    <li>
+                        <a href="?page={{ files.previous_page_number }}&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Previous</a>
+                    </li>
+                {% endif %}
+                {% for num in files.paginator.page_range %}
+                    {% if files.number == num %}
+                        <li>
+                            <a href="?page={{ num }}&search={{ request.GET.search }}" class="px-3 py-1 bg-blue-600 text-white rounded-md" aria-current="page">{{ num }}</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="?page={{ num }}&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                {% if files.has_next %}
+                    <li>
+                        <a href="?page={{ files.next_page_number }}&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Next</a>
+                    </li>
+                    <li>
+                        <a href="?page={{ files.paginator.num_pages }}&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const optionsButton = document.querySelector('.options-button');
+            const optionsDropdown = document.querySelector('.options-dropdown');
+
+            optionsButton.addEventListener('click', function() {
+                optionsDropdown.classList.toggle('hidden');
+            });
+        });
+    </script>
 </div>
-
-<script>
-    document.getElementById('searchInput').addEventListener('keyup', function(event) {
-        var searchQuery = event.target.value.toLowerCase();
-        var rows = document.querySelectorAll('tbody tr');
-
-        rows.forEach(function(row) {
-            var fileName = row.querySelector('td:first-child').textContent.toLowerCase();
-            if (fileName.includes(searchQuery)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const optionsButton = document.querySelector('.options-button');
-        const optionsDropdown = document.querySelector('.options-dropdown');
-
-        optionsButton.addEventListener('click', function() {
-            optionsDropdown.classList.toggle('hidden');
-        });
-    });
-</script>
-
 {% endblock content %}
