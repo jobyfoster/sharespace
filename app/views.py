@@ -94,52 +94,47 @@ def upload(request):
 
 @login_required
 def view_share_space(request, space_id):
-    # Retrieves the ShareSpace with the given ID or shows a 404 error if not found.
     share_space = get_object_or_404(ShareSpace, id=space_id)
 
     if is_space_taken_down(share_space):
         report = SpaceReport.objects.get(space_reported=share_space)
-        print(report)
-
         return render(request, "app/space_taken_down.html", {"report": report})
 
-    # Check if the current user has access to the ShareSpace.
     if not share_space.is_accessible_by_user(request.user):
-        # Redirects to a password input page for password-protected spaces.
         if share_space.visibility == ShareSpace.VisibilityChoices.PASSWORD_PROTECTED:
             return redirect("space_password", space_id=space_id)
-        # Shows an error message and redirects to the home page for private spaces.
         elif share_space.visibility == ShareSpace.VisibilityChoices.PRIVATE:
-            messages.error(
-                request, "This is a private ShareSpace that you do not have access to!"
-            )
+            messages.error(request, "This is a private ShareSpace that you do not have access to!")
             return redirect("home")
 
-    # Retrieves all files associated with this ShareSpace.
     share_space_files = share_space.files.all()
-    # Checks if the user owns this ShareSpace
+
+    # Implementing search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        # Assuming 'file' field contains the filename or filepath
+        share_space_files = share_space_files.filter(file__icontains=search_query)
+
     is_owner = share_space.is_owner(user=request.user)
-    # Checks if the user owns this ShareSpace
     is_favorited = share_space.is_favorited(user=request.user)
 
-    # Sets up pagination for the logs, displaying 10 per page
-    paginator = Paginator(share_space_files, 10)
-
-    # Gets the current page number from the request
+    # Pagination
+    paginator = Paginator(share_space_files, 10)  # Adjust the number per page as needed
     page_number = request.GET.get("page")
-    files = paginator.get_page(page_number)  # Gets the files for the current page
+    files = paginator.get_page(page_number)
 
-    # Renders the ShareSpace page with its details and files.
     return render(
         request,
         "app/share_space.html",
-        context={
+        {
             "share_space": share_space,
             "files": files,
             "is_owner": is_owner,
             "is_favorited": is_favorited,
-        },
+        }
     )
+
+
 
 
 @login_required
@@ -244,27 +239,23 @@ def download_file_view(request, file_id):
 
 @login_required
 def user_spaces(request):
-    # Retrieve all shared spaces created by the user.
+    search_query = request.GET.get('search', '')  # Get the search term from the request
+
+    # Retrieve all shared spaces created or favorited by the user
     users_spaces = get_user_spaces(user=request.user)
-
-    # Retrieve all shared spaces favorited by the user.
     users_favorites = get_user_favorites(user=request.user)
+    combined_spaces = (users_spaces | users_favorites).distinct().order_by("-created_at")
 
-    # Combine and sort the shared spaces and favorited spaces.
-    # We use a queryset union and sort by 'created_at'.
-    # 'distinct' is used to avoid duplicate entries.
-    combined_spaces = (
-        (users_spaces | users_favorites).distinct().order_by("-created_at")
-    )
+    # If there is a search term, filter the combined spaces
+    if search_query:
+        combined_spaces = combined_spaces.filter(title__icontains=search_query)
 
-    # Sets up pagination for the logs, displaying 10 per page
     paginator = Paginator(combined_spaces, 10)
-
-    # Gets the current page number from the request
     page_number = request.GET.get("page")
-    spaces = paginator.get_page(page_number)  # Gets the spaces for the current page
+    spaces = paginator.get_page(page_number)
 
     return render(request, "app/user_files.html", {"spaces": spaces})
+
 
 
 @login_required

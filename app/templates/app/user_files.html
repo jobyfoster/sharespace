@@ -4,7 +4,14 @@
 
 {% block content %}
 <div class="container mx-auto mt-6">
-    <h3 class="text-3xl font-semibold mb-1">My Spaces</h3>
+    <div class="flex flex-col md:flex-row justify-between items-center">
+        <h3 class="text-3xl font-semibold mb-4 md:mb-0">My Spaces</h3>
+        <form action="" method="get">
+            <input type="text" name="search" id="searchInput" placeholder="Search...">
+            <button type="submit">Search</button>
+        </form>
+        
+    </div>
     <div class="overflow-x-auto mt-4">
         <table class="min-w-full table-auto leading-normal">
             <thead>
@@ -62,29 +69,29 @@
         <ul class="inline-flex items-center space-x-1">
             {% if spaces.has_previous %}
                 <li>
-                    <a href="?page=1" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">First</a>
+                    <a href="?page=1&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">First</a>
                 </li>
                 <li>
-                    <a href="?page={{ spaces.previous_page_number }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Previous</a>
+                    <a href="?page={{ spaces.previous_page_number }}&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Previous</a>
                 </li>
             {% endif %}
             {% for num in spaces.paginator.page_range %}
                 {% if spaces.number == num %}
                     <li>
-                        <a href="?page={{ num }}" class="px-3 py-1 bg-blue-600 text-white rounded-md" aria-current="page">{{ num }}</a>
+                        <a href="?page={{ num }}&search={{ request.GET.search }}" class="px-3 py-1 bg-blue-600 text-white rounded-md" aria-current="page">{{ num }}</a>
                     </li>
                 {% else %}
                     <li>
-                        <a href="?page={{ num }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">{{ num }}</a>
+                        <a href="?page={{ num }}&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">{{ num }}</a>
                     </li>
                 {% endif %}
             {% endfor %}
             {% if spaces.has_next %}
                 <li>
-                    <a href="?page={{ spaces.next_page_number }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Next</a>
+                    <a href="?page={{ spaces.next_page_number }}&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Next</a>
                 </li>
                 <li>
-                    <a href="?page={{ spaces.paginator.num_pages }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Last</a>
+                    <a href="?page={{ spaces.paginator.num_pages }}&search={{ request.GET.search }}" class="px-3 py-1 text-blue-600 hover:bg-blue-100 rounded-md border border-blue-600">Last</a>
                 </li>
             {% endif %}
         </ul>
