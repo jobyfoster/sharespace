@@ -3,10 +3,10 @@
 {% block page_title %}{{ share_space.title }} by {{ share_space.user.username }}{% endblock page_title %}
 
 
-{% block content %}
-<div class="container mx-auto mt-6">
-    <div class="space-header mb-6 flex justify-between items-center">
-        <div>
+{        
+<        
+         
+         
             <h1 class="text-3xl font-semibold mb-1">{{ share_space.title }}<p class="inline font-semibold text-base text-gray-600 pl-2">by: {{ share_space.user.username }}</p></h1>
             <p class="text-gray-600">{{ share_space.description }}</p>
         </div>
@@ -22,11 +22,10 @@
                 {% else %}
 
                     {% if is_favorited %}
-                        <a href="{% url 'unfavorite_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-heart"></i> Unfavorite</a>
+                    <a href="{% url 'unfavorite_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-heart"></i> Unfavorite</a>
                     {% else %}
-                        <a href="{% url 'favorite_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-regular fa-heart"></i> Favorite</a>
+                    <a href="{% url 'favorite_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-regular fa-heart"></i> Favorite</a>
                     {% endif %}
-            
                     <a href="{% url 'report_space' share_space.id %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-flag"></i> Report</a>
                 {% endif %}
                 
