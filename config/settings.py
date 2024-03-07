@@ -138,3 +138,6 @@ LOGIN_URL = "login"
 CORS_ALLOW_ALL_ORIGINS = True
 
 X_FRAME_OPTIONS = "ALLOW"
+
+# Add the trusted origin for CSRF verification
+CSRF_TRUSTED_ORIGINS = ["https://sharespace-6645c8ad1636.herokuapp.com"]
