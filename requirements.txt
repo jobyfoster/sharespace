@@ -5,3 +5,4 @@ django-cors-headers==4.3.1
 django-crispy-forms==2.1
 sqlparse==0.4.4
 tzdata==2023.4
+decouple==3.5 
