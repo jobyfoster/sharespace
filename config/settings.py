@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,14 +81,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-from decouple import config
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": config("DB_NAME", default=BASE_DIR / "db.sqlite3"),
-    }
-}
+import dj_database_url
+
+# Load database configuration from the DATABASE_URL environment variable
+DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
 
 
 # Password validation
